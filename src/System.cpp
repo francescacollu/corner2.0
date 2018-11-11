@@ -63,5 +63,10 @@ Block System::Merge(const Block& b1, const Block& b2)
     return b1;
 }
 
+void System::SetCornerSize(int m)
+{
+    M = m;
+}
+
 
 

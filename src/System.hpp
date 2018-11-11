@@ -14,6 +14,8 @@
 
 class System
 {
+    // size of the corner-space
+    int M;
     std::vector<Site> Sites;
     std::vector<Block> Blocks;
 
@@ -28,6 +30,9 @@ public:
 
     // The heart of the program
     void Simulate();
+
+    // Set size of the corner-space
+    void SetCornerSize(int m);
 };
 
 #endif /* System_hpp */
