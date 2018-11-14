@@ -16,11 +16,12 @@ int main()
     
     sy.Add(Site());
     sy.Add(Site(Site::DissipatorType::ZUp));
-    sy.Add(Site(Site::DissipatorType::ZDown));
-    sy.Add(Site());
+    // sy.Add(Site(Site::DissipatorType::ZDown));
+    // sy.Add(Site());
 
     sy.SetCornerSize(10);
 
     sy.Simulate();
+
     return 0;
 }

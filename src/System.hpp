@@ -19,11 +19,16 @@ class System
     std::vector<Site> Sites;
     std::vector<Block> Blocks;
 
+    // coupling spin coefficients
+    float Jx;
+    float Jy;
+    float Jz;
+
     // Each iteration merges blocks two by two
     void Iterate();
 
     // Merging two blocks corresponding to indices i, j
-    static Block Merge(const Block& b1, const Block& b2);
+    Block Merge(const Block& b1, const Block& b2);
 public:
     // The method adds one site
     void Add(Site);
@@ -33,6 +38,11 @@ public:
 
     // Set size of the corner-space
     void SetCornerSize(int m);
+
+    System();
+
+private:
+    static void PrintSize(arma::cx_mat&);
 };
 
 #endif /* System_hpp */
