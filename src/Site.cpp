@@ -14,10 +14,10 @@ Site::Site(DissipatorType d)
 
 Site::Site()
 {
-    Dissipator = DissipatorType::Empty;
+    Dissipator = Empty;
 }
 
-Site::DissipatorType Site::GetDissipator() const
+DissipatorType Site::GetDissipator() const
 {
     return Dissipator;
 }

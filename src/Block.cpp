@@ -33,17 +33,17 @@ Block::Block(Site s)
     sigmaZ[0] << cx_double(0.5, 0.) << cx_double(0., 0.) << endr 
               << cx_double(0., 0.) << cx_double(-0.5, 0.) << endr;
     
-    if (s.GetDissipator() == Site::DissipatorType::Empty)
+    if (s.GetDissipator() == Empty)
     {
         C[0] << cx_double(1., 0.) << cx_double(0., 0.) << endr 
              << cx_double(0., 0.) << cx_double(1., 0.) << endr;
     }
-    else if (s.GetDissipator() == Site::DissipatorType::ZUp)
+    else if (s.GetDissipator() == ZUp)
     {
         C[0] << cx_double(0., 0.) << cx_double(1., 0.) << endr 
              << cx_double(0., 0.) << cx_double(0., 0.) << endr;
     }
-    else if (s.GetDissipator() == Site::DissipatorType::ZDown)
+    else if (s.GetDissipator() == ZDown)
     {
         C[0] << cx_double(0., 0.) << cx_double(0., 0.) << endr 
              << cx_double(1., 0.) << cx_double(0., 0.) << endr;

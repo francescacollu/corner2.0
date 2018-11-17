@@ -8,6 +8,7 @@
 #include "System.hpp"
 #include <cmath>
 #include <algorithm>
+#include <fstream>
 
 using namespace std;
 using namespace arma;
@@ -217,6 +218,8 @@ void System::GetExpValue()
         cout << "System::GetExpValue -> The merge hasn't worked.";
     }
 
+    ofstream myfile("8sites1reservoir.txt");
+
     for(int i=0; i<Sites.size(); i++)
     {
         cout << "sigmaZ: ";
@@ -224,6 +227,7 @@ void System::GetExpValue()
         cout << "dm: ";
         PrintSize(Blocks[0].dm);
 
+        myfile << i << "\t" << real(arma::trace(Blocks[0].sigmaZ[i]*Blocks[0].dm)) << endl;
         cout << "<sigmaZ[" << i << "]> = " << arma::trace(Blocks[0].sigmaZ[i]*Blocks[0].dm) << endl;
     }
 }

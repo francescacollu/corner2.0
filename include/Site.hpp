@@ -8,10 +8,11 @@
 #ifndef Site_hpp
 #define Site_hpp
 
+enum DissipatorType{Empty, ZUp, ZDown};
+
 class Site
 {
 public:
-    enum DissipatorType{Empty, ZUp, ZDown};
     DissipatorType GetDissipator() const;
     Site(DissipatorType);
     Site();

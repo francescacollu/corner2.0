@@ -18,7 +18,6 @@ int main()
     TApplication* app = new TApplication("app", 0, 0);
     TCanvas* c = new TCanvas;
 
-    std::cout << "CIAAAAO" << std::endl;
     TH1F* h = new TH1F;
     h->Fill(0.5);
     h->Draw();
@@ -29,7 +28,7 @@ int main()
 
     System sy;
     
-    sy.Add(Site(Site::DissipatorType::ZUp));
+    sy.Add(Site(ZUp));
     sy.Add(Site());
     sy.Add(Site());
     sy.Add(Site());
@@ -37,20 +36,6 @@ int main()
     sy.Add(Site());
     sy.Add(Site());
     sy.Add(Site());
-
-    // sy.Add(Site(Site::DissipatorType::ZDown));
-    // sy.Add(Site(Site::DissipatorType::ZDown));
-    // sy.Add(Site(Site::DissipatorType::ZDown));
-    // sy.Add(Site(Site::DissipatorType::ZDown));
-    // sy.Add(Site());
-    // sy.Add(Site());
-    // sy.Add(Site());
-    // sy.Add(Site());
-    // sy.Add(Site());
-    // sy.Add(Site());
-    // sy.Add(Site());
-    // sy.Add(Site());
-
 
     sy.SetCornerSize(40);
 
