@@ -15,6 +15,7 @@
 class Block
 {
     std::vector<arma::cx_mat> C; // Dissipator
+    std::vector<arma::cx_mat> sigmaZ;
     arma::cx_mat I;
     arma::cx_mat Sx;
     arma::cx_mat Sy;
@@ -37,9 +38,7 @@ public:
     const arma::cx_mat& GetDissipator(int) const;
 
     // Returns the dm of the block
-    const arma::cx_mat& GetBlockEvectDM() const;
-
-    
+    const arma::cx_mat& GetBlockEvectDM() const;    
 };
 
 #endif /* Block_hpp */

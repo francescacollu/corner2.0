@@ -28,7 +28,8 @@ class System
     void Iterate();
 
     // Merging two blocks corresponding to indices i, j
-    Block Merge(const Block& b1, const Block& b2);
+    Block Merge(const Block& b1, const Block& b2, bool IsLeft);
+
 public:
     // The method adds one site
     void Add(Site);
@@ -40,6 +41,9 @@ public:
     void SetCornerSize(int m);
 
     System();
+
+    // Calculate the expectation value of an operator
+    void GetExpValue();
 
 private:
     static void PrintSize(arma::cx_mat&);

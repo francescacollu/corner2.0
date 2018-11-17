@@ -13,7 +13,7 @@ class HMatrix
     arma::cx_mat eigvec;
     
     arma::cx_vec Projection(arma::cx_vec oldvec, arma::cx_vec newvec);
-    
+
 public:
     HMatrix(const arma::cx_mat&);
     int size() const;
@@ -42,7 +42,7 @@ public:
     // Has the matrix the properties of a density matrix?
     bool IsDM();
 
-    // Calculates the DM with the right parameters
-    arma::cx_mat GetDM();
+    // Calculates the steady state density matrix with the right parameters
+    arma::cx_mat GetSteadyStateDM();
     
 };

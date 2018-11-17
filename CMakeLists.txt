@@ -1,0 +1,62 @@
+# Nome del progetto
+project(Tesi)
+
+# Setta una variabile di nome EXEC_NAME uguale a StructuredCorner
+set(EXEC_NAME corner2.0)
+
+# Minima versione di CMake richiesta per buildare il tuo progetto
+# Serve almeno la 2.8.12 per usare i comandi target_link_libraries ecc...
+cmake_minimum_required(VERSION 2.8.12)
+
+# Digli di usare lo standard c++11
+set(CMAKE_CXX_STANDARD 11)
+
+# Trova ROOT e ARMADILLO e definisce delle variabili tipo ROOT_INCLUDE_DIRS ecc...
+# che ti servono per linkarle al tuo eseguibile. Se non lo trova ti dà errore
+# perché gli ho detto che sono REQUIRED
+find_package(ROOT REQUIRED)
+find_package(ARMADILLO REQUIRED)
+message("ARMADILLO LIBRARY PATH: " ${ARMADILLO_LIBRARIES})
+
+# Setta le flag per compilare root da dare al compilatore
+set(CMAKE_CXX_FLAGS ${ROOT_CXX_FLAGS})
+
+# Questa è la lista delle sorgenti da compilare per creare
+# il tuo eseguibile
+# Se ti dà fastidio scrivere ogni volta src
+# c'è un modo per evitarlo ma non volevo mettere troppa roba
+set(SOURCES
+	src/testSystem.cpp
+	src/Block.cpp
+	src/HMatrix.cpp
+	src/Site.cpp
+	src/System.cpp
+	src/utility.cpp
+	# aggiungi qui tutte le sorgenti...	
+)
+
+# Qua gli dici come si chiama il tuo eseguibile
+# e quali sorgenti deve compilare
+# Dato che EXEC_NAME è uguale a corner2.0
+# l'eseguibile si chiamerà così
+add_executable(${EXEC_NAME} ${SOURCES})
+
+
+# Aggiungi la cartella degli header di Root e Armadillo alla
+# lista di cartelle in cui guardare quando dal codice tu
+# scrivi #include ...
+# In questo modo quando scrivi #include <armadillo> lui guarda
+# anche nella cartella di Armadillo
+target_include_directories(${EXEC_NAME} PUBLIC ${ROOT_INCLUDE_DIRS})
+target_include_directories(${EXEC_NAME} PUBLIC ${ARMADILLO_INCLUDE_DIRS})
+
+# Linka le librerie al tuo eseguibile
+target_link_libraries(${EXEC_NAME} ${ROOT_LIBRARIES} ${ARMADILLO_LIBRARIES})
+
+# Questa è un po' sottile. Per ora sappi solo che stiamo aggiungendo la cartella include
+# alla lista delle cartelle in cui guarda il compilatore
+# quando scrivi #include ..., come nel caso dell'altro comando usato prima
+target_include_directories(${EXEC_NAME} PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)

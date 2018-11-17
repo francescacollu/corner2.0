@@ -180,29 +180,28 @@ bool HMatrix::IsDM()
     return (HMatrix::IsHermitian() && HMatrix::TraceOne() && HMatrix::EigSumIsOne());
 }
 
-arma::cx_mat HMatrix::GetDM()
+arma::cx_mat HMatrix::GetSteadyStateDM()
 {
-    cx_mat DM;
-    int i=0;
-    while(corner::approx_equal(eigval(i), cx_double(0.,0.)))
+    cx_mat dm;
+    //cout << "spectrum:\n";
+    //cout << eigval << endl;
+    if(!corner::approx_equal(eigval(0), cx_double(0.,0.)))
     {
-        cx_vec rho_ss = eigvec.col(i);
-        m = reshape(rho_ss, sqrt(size()), sqrt(size()));
-        
-        m = (m+trans(m))/2.;
-        m = m/trace(m);
-        HMatrix M(m);
-         
-        if(M.IsDM())
-        {
-            DM = m;
-            break;
-        }
-        else
-        {
-            i+=1;
-        }
+        cout << "HMatrix::GetSteadyStateDM -> There is a problem with the steady-state. Is it far from zero?\n";
+        cout << "This is its value: " << eigval(0) << endl;
+    }
+    cx_vec rho_ss = eigvec.col(0);
+    dm = reshape(rho_ss, sqrt(size()), sqrt(size()));
+    
+    dm = (dm+trans(dm))/2.;
+    dm = dm/trace(dm);
+
+    HMatrix DM(dm);
+
+    if(!DM.IsDM())
+    {
+        cout << "HMatrix::GetSteadyStateDM -> The matrix does not satisfy one ore more than one property of the DM. A check is necessessary.\n";
     }
     
-    return DM;
+    return dm;
 }
