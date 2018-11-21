@@ -40,10 +40,13 @@ public:
     // Set size of the corner-space
     void SetCornerSize(int m);
 
+    // Set the coupling constants
+    void SetCouplingConstants(float jx, float jy, float jz);
+
     System();
 
     // Calculate the expectation value of an operator
-    void GetExpValue();
+    void GetExpValue(const char *file_name);
 
 private:
     static void PrintSize(arma::cx_mat&);

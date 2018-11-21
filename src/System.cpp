@@ -17,7 +17,7 @@ System::System()
 {
     M = 0;
     Jx = 1.;
-    Jy = 0.5;
+    Jy = 1.;
     Jz = 1.;
 }
 
@@ -161,19 +161,26 @@ void System::SetCornerSize(int m)
     M = m;
 }
 
+void System::SetCouplingConstants(float jx, float jy, float jz)
+{
+    Jx = jx;
+    Jy = jy;
+    Jz = jz;
+}
+
 void System::PrintSize(arma::cx_mat& m)
 {
     cout << m.n_rows << "x" << m.n_cols << endl;
 }
 
-void System::GetExpValue()
+void System::GetExpValue(const char *file_name)
 {
     if(Blocks.size() != 1)
     {
         cout << "System::GetExpValue -> The merge hasn't worked.";
     }
 
-    ofstream myfile("output.txt");
+    ofstream myfile(file_name);
 
     for(int i=0; i<Sites.size(); i++)
     {
