@@ -11,17 +11,12 @@ HMatrix::HMatrix(const cx_mat& m)
     
     // Get eigenvalues and eigenvectors in ascending order
     eig_gen(eigval, eigvec, m);
-    uvec sorting_indices = sort_index(eigval);
+    uvec sorting_indices = stable_sort_index(eigval);
     
     eigvec = eigvec.cols(sorting_indices);
     eigval = sort(eigval);
     
-    //check(m*eigvec.col(size() - 1) == eigvec.col(size() - 1)*eigval(size() - 1), "HMatrix::HMatrix", "Eigval/Eigvec mismatch");
-    //if(!approx_equal(m*eigvec.col(size() - 1), eigvec.col(size() - 1)*eigval(size() - 1), "absdiff", 1E-10))
-   // {
-     //   cout << m*eigvec.col(size() - 1) << endl << eigvec.col(size() - 1)*eigval(size() - 1) << endl;
-    //}
-    //check(approx_equal(m*eigvec.col(size() - 1), eigvec.col(size() - 1)*eigval(size() - 1), "absdiff", 1E-10), "HMatrix::HMatrix", "Eigval/Eigvec mismatch");
+    check(approx_equal(m*eigvec.col(size() - 1), eigvec.col(size() - 1)*eigval(size() - 1), "absdiff", 1E-10), "HMatrix::HMatrix", "Eigval/Eigvec mismatch");
     
 }
 
@@ -88,7 +83,7 @@ int HMatrix::GetDegeneration(const int& i)
     
     for (int k = 0; k < size(); k++)
     {
-        if (corner::approx_equal(eigval(k),lambda))
+        if (corner::approx_equal(eigval(k), lambda))
             degeneration++;
     }
     //cout << "Degeneration: " << degeneration << endl;
@@ -183,8 +178,11 @@ bool HMatrix::IsDM()
 arma::cx_mat HMatrix::GetSteadyStateDM()
 {
     cx_mat dm;
-    //cout << "spectrum:\n";
-    //cout << eigval << endl;
+    // cout << "spectrum:\n";
+    // cout << eigval << endl;
+
+    cout << "Degeneration: " << GetDegeneration(0) << endl;
+
     if(!corner::approx_equal(eigval(0), cx_double(0.,0.)))
     {
         cout << "HMatrix::GetSteadyStateDM -> There is a problem with the steady-state. Is it far from zero?\n";

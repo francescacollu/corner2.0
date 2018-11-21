@@ -12,19 +12,19 @@ cmake_minimum_required(VERSION 2.8.12)
 set(CMAKE_CXX_STANDARD 11)
 
 # Trova ROOT e ARMADILLO e definisce delle variabili tipo ROOT_INCLUDE_DIRS ecc...
-# che ti servono per linkarle al tuo eseguibile. Se non lo trova ti dà errore
-# perché gli ho detto che sono REQUIRED
+# che ti servono per linkarle al tuo eseguibile. Se non lo trova ti dï¿½ errore
+# perchï¿½ gli ho detto che sono REQUIRED
 find_package(ROOT REQUIRED)
-find_package(ARMADILLO REQUIRED)
+find_package(Armadillo REQUIRED)
 message("ARMADILLO LIBRARY PATH: " ${ARMADILLO_LIBRARIES})
 
 # Setta le flag per compilare root da dare al compilatore
 set(CMAKE_CXX_FLAGS ${ROOT_CXX_FLAGS})
 
-# Questa è la lista delle sorgenti da compilare per creare
+# Questa ï¿½ la lista delle sorgenti da compilare per creare
 # il tuo eseguibile
-# Se ti dà fastidio scrivere ogni volta src
-# c'è un modo per evitarlo ma non volevo mettere troppa roba
+# Se ti dï¿½ fastidio scrivere ogni volta src
+# c'ï¿½ un modo per evitarlo ma non volevo mettere troppa roba
 set(SOURCES
 	src/testSystem.cpp
 	src/Block.cpp
@@ -37,8 +37,8 @@ set(SOURCES
 
 # Qua gli dici come si chiama il tuo eseguibile
 # e quali sorgenti deve compilare
-# Dato che EXEC_NAME è uguale a corner2.0
-# l'eseguibile si chiamerà così
+# Dato che EXEC_NAME ï¿½ uguale a corner2.0
+# l'eseguibile si chiamerï¿½ cosï¿½
 add_executable(${EXEC_NAME} ${SOURCES})
 
 
@@ -53,7 +53,7 @@ target_include_directories(${EXEC_NAME} PUBLIC ${ARMADILLO_INCLUDE_DIRS})
 # Linka le librerie al tuo eseguibile
 target_link_libraries(${EXEC_NAME} ${ROOT_LIBRARIES} ${ARMADILLO_LIBRARIES})
 
-# Questa è un po' sottile. Per ora sappi solo che stiamo aggiungendo la cartella include
+# Questa ï¿½ un po' sottile. Per ora sappi solo che stiamo aggiungendo la cartella include
 # alla lista delle cartelle in cui guarda il compilatore
 # quando scrivi #include ..., come nel caso dell'altro comando usato prima
 target_include_directories(${EXEC_NAME} PRIVATE

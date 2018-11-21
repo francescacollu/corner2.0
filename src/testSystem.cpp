@@ -27,17 +27,28 @@ int main()
     c->Update();
 
     System sy;
-    
-    sy.Add(Site(ZUp));
-    sy.Add(Site());
-    sy.Add(Site());
-    sy.Add(Site());
-    sy.Add(Site());
-    sy.Add(Site());
-    sy.Add(Site());
-    sy.Add(Site());
 
-    sy.SetCornerSize(40);
+    sy.Add(Site(ZDown));
+    sy.Add(Site(ZDown));
+    sy.Add(Site(ZDown));
+    sy.Add(Site(ZDown));
+    sy.Add(Site(ZDown));
+    sy.Add(Site(ZDown));
+    sy.Add(Site(ZDown));
+    sy.Add(Site(ZDown));
+    // sy.Add(Site(ZDown));
+    // sy.Add(Site(ZDown));
+    // sy.Add(Site(ZDown));
+    // sy.Add(Site(ZDown));
+    // sy.Add(Site(ZDown));
+    // sy.Add(Site(ZDown));
+    // sy.Add(Site(ZDown)); 
+    // sy.Add(Site(ZDown));
+
+
+
+
+    sy.SetCornerSize(60);
 
     sy.Simulate();
 
