@@ -8,7 +8,7 @@
 #ifndef Site_hpp
 #define Site_hpp
 
-enum DissipatorType{Empty, ZUp, ZDown};
+enum DissipatorType{Empty, ZUp, ZDown, epsZUp, epsZDown};
 
 class Site
 {

@@ -44,10 +44,20 @@ Block::Block(Site s)
         C[0] << cx_double(0., 0.) << cx_double(1., 0.) << endr 
              << cx_double(0., 0.) << cx_double(0., 0.) << endr;
     }
+    else if (s.GetDissipator() == epsZUp)
+    {
+        C[0] << cx_double(0., 0.) << cx_double(0.01, 0.) << endr 
+             << cx_double(0., 0.) << cx_double(0., 0.) << endr;
+    }
     else if (s.GetDissipator() == ZDown)
     {
         C[0] << cx_double(0., 0.) << cx_double(0., 0.) << endr 
              << cx_double(1., 0.) << cx_double(0., 0.) << endr;
+    }
+    else if (s.GetDissipator() == epsZDown)
+    {
+        C[0] << cx_double(0., 0.) << cx_double(0., 0.) << endr 
+             << cx_double(0.01, 0.) << cx_double(0., 0.) << endr;
     }
     else
     {
@@ -58,6 +68,7 @@ Block::Block(Site s)
     D = -0.5*kron(C[0].st()*conj(C[0]), I) - 0.5*kron(I, trans(C[0])*C[0]) + kron(conj(C[0]), C[0]);
     L = cx_double(0., 1.)*kron(H.st(), I) - cx_double(0., 1.)*kron(I, H) + D;
     HMatrix liouv(L);
+    cout << "eigenvalues of L: " << liouv.GetEigenvalues() << endl;
     dm = liouv.GetSteadyStateDM();
     HMatrix DM(dm);
     evectDM = DM.GetONBasis();

@@ -40,6 +40,7 @@ set(SOURCES
 # Dato che EXEC_NAME � uguale a corner2.0
 # l'eseguibile si chiamer� cos�
 add_executable(${EXEC_NAME} ${SOURCES})
+add_executable(quantumTrajectories src/quantumTrajectories.cpp)
 
 
 # Aggiungi la cartella degli header di Root e Armadillo alla
@@ -50,8 +51,13 @@ add_executable(${EXEC_NAME} ${SOURCES})
 target_include_directories(${EXEC_NAME} PUBLIC ${ROOT_INCLUDE_DIRS})
 target_include_directories(${EXEC_NAME} PUBLIC ${ARMADILLO_INCLUDE_DIRS})
 
+target_include_directories(quantumTrajectories PUBLIC ${ROOT_INCLUDE_DIRS})
+target_include_directories(quantumTrajectories PUBLIC ${ARMADILLO_INCLUDE_DIRS})
+
 # Linka le librerie al tuo eseguibile
 target_link_libraries(${EXEC_NAME} ${ROOT_LIBRARIES} ${ARMADILLO_LIBRARIES})
+
+target_link_libraries(quantumTrajectories ${ROOT_LIBRARIES} ${ARMADILLO_LIBRARIES})
 
 # Questa � un po' sottile. Per ora sappi solo che stiamo aggiungendo la cartella include
 # alla lista delle cartelle in cui guarda il compilatore

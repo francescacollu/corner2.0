@@ -177,29 +177,45 @@ bool HMatrix::IsDM()
 
 arma::cx_mat HMatrix::GetSteadyStateDM()
 {
+    //std::vector<cx_vec> eigvecs;
     cx_mat dm;
-    // cout << "spectrum:\n";
-    // cout << eigval << endl;
 
     cout << "Degeneration: " << GetDegeneration(0) << endl;
 
-    if(!corner::approx_equal(eigval(0), cx_double(0.,0.)))
+    std::vector<cx_mat> eigvecs;
+    for(int i=0; i<GetDegeneration(0); i++)
     {
-        cout << "HMatrix::GetSteadyStateDM -> There is a problem with the steady-state. Is it far from zero?\n";
-        cout << "This is its value: " << eigval(0) << endl;
+        //cout << "eigvec: " << eigvec.col(i) << endl;
+        eigvecs.push_back(eigvec.col(i));
     }
-    cx_vec rho_ss = eigvec.col(0);
-    dm = reshape(rho_ss, sqrt(size()), sqrt(size()));
+
+    cx_vec eigvecTot = 0.*eigvecs[0];
+    for(int i=0; i<GetDegeneration(0); i++)
+    {
+        eigvecTot += (1/float(GetDegeneration(0)))*eigvecs[i];
+    }
+    //cout << eigvecTot << endl;
+
+    dm = reshape(eigvecTot, sqrt(size()), sqrt(size()));
+
+    // dm = reshape(eigvec.col(0), sqrt(size()), sqrt(size()));
     
     dm = (dm+trans(dm))/2.;
+
+    //cout << dm << endl;
+    check(!corner::approx_equal(cx_double(trace(dm)), cx_double(0.,0.)), "HMatrix::GetSteadyStateDM", "trace(dm) approximately equals to zero.");
+    cout << "Tr(dm) = " << trace(dm) << endl;
     dm = dm/trace(dm);
+    cout << "Tr(dm) = " << trace(dm) << endl;
+
 
     HMatrix DM(dm);
-
+    
     if(!DM.IsDM())
     {
         cout << "HMatrix::GetSteadyStateDM -> The matrix does not satisfy one ore more than one property of the DM. A check is necessessary.\n";
     }
+
     
     return dm;
 }
