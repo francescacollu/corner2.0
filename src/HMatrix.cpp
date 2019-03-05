@@ -11,13 +11,16 @@ HMatrix::HMatrix(const cx_mat& m)
     
     // Get eigenvalues and eigenvectors in ascending order
     eig_gen(eigval, eigvec, m);
+    
     uvec sorting_indices = stable_sort_index(eigval);
     
     eigvec = eigvec.cols(sorting_indices);
-    eigval = sort(eigval);
+    eigval = eigval(sorting_indices);
+
+    cout << eigval << endl;
     
-    check(approx_equal(m*eigvec.col(size() - 1), eigvec.col(size() - 1)*eigval(size() - 1), "absdiff", 1E-10), "HMatrix::HMatrix", "Eigval/Eigvec mismatch");
-    
+    check(approx_equal(m*eigvec.col(size() - 1), eigvec.col(size() - 1)*eigval(size() - 1), "absdiff", 1E-10), 
+    "HMatrix::HMatrix", "Eigval/Eigvec mismatch");
 }
 
 int HMatrix::size() const
@@ -148,18 +151,18 @@ const arma::cx_vec& HMatrix::GetEigenvalues() const
     return eigval;
 }
 
-bool HMatrix::IsHermitian()
+bool HMatrix::IsHermitian() const
 {
     return arma::approx_equal(trans(m), m, "absdiff", 1E-10);
 }
 
-bool HMatrix::TraceOne()
+bool HMatrix::TraceOne() const
 {
     //cout << "Trace: " << trace(m) << endl;
     return corner::approx_equal(trace(m), cx_double(1.,0.));
 }
 
-bool HMatrix::EigSumIsOne()
+bool HMatrix::EigSumIsOne() const
 {
     double sum=0.;
     for(int i=0; i<m.n_rows; i++)
@@ -170,9 +173,21 @@ bool HMatrix::EigSumIsOne()
     return corner::approx_equal(sum, cx_double(1.,0.));
 }
 
-bool HMatrix::IsDM()
+bool HMatrix::EigRealPositive() const
 {
-    return (HMatrix::IsHermitian() && HMatrix::TraceOne() && HMatrix::EigSumIsOne());
+    for(int i=0; i<m.n_rows; i++)
+    {
+        if(!approx_equal(imag(eigval(i)), cx_double(0., 0.), 1E-10) || real(eigval(i)) < -1E-10)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool HMatrix::IsDM() const
+{
+    return (IsHermitian() && TraceOne() && EigSumIsOne() && EigRealPositive());
 }
 
 arma::cx_mat HMatrix::GetSteadyStateDM()
@@ -185,7 +200,6 @@ arma::cx_mat HMatrix::GetSteadyStateDM()
     std::vector<cx_mat> eigvecs;
     for(int i=0; i<GetDegeneration(0); i++)
     {
-        //cout << "eigvec: " << eigvec.col(i) << endl;
         eigvecs.push_back(eigvec.col(i));
     }
 
@@ -194,21 +208,15 @@ arma::cx_mat HMatrix::GetSteadyStateDM()
     {
         eigvecTot += (1/float(GetDegeneration(0)))*eigvecs[i];
     }
-    //cout << eigvecTot << endl;
 
     dm = reshape(eigvecTot, sqrt(size()), sqrt(size()));
-
-    // dm = reshape(eigvec.col(0), sqrt(size()), sqrt(size()));
     
     dm = (dm+trans(dm))/2.;
 
-    //cout << dm << endl;
     check(!corner::approx_equal(cx_double(trace(dm)), cx_double(0.,0.)), "HMatrix::GetSteadyStateDM", "trace(dm) approximately equals to zero.");
-    cout << "Tr(dm) = " << trace(dm) << endl;
     dm = dm/trace(dm);
+
     cout << "Tr(dm) = " << trace(dm) << endl;
-
-
     HMatrix DM(dm);
     
     if(!DM.IsDM())
@@ -216,6 +224,5 @@ arma::cx_mat HMatrix::GetSteadyStateDM()
         cout << "HMatrix::GetSteadyStateDM -> The matrix does not satisfy one ore more than one property of the DM. A check is necessessary.\n";
     }
 
-    
     return dm;
 }

@@ -11,6 +11,7 @@ cmake_minimum_required(VERSION 2.8.12)
 # Digli di usare lo standard c++11
 set(CMAKE_CXX_STANDARD 11)
 
+
 # Trova ROOT e ARMADILLO e definisce delle variabili tipo ROOT_INCLUDE_DIRS ecc...
 # che ti servono per linkarle al tuo eseguibile. Se non lo trova ti d� errore
 # perch� gli ho detto che sono REQUIRED
@@ -20,6 +21,9 @@ message("ARMADILLO LIBRARY PATH: " ${ARMADILLO_LIBRARIES})
 
 # Setta le flag per compilare root da dare al compilatore
 set(CMAKE_CXX_FLAGS ${ROOT_CXX_FLAGS})
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+set(CMAKE_MACOSX_RPATH 1)
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 # Questa � la lista delle sorgenti da compilare per creare
 # il tuo eseguibile
@@ -41,6 +45,8 @@ set(SOURCES
 # l'eseguibile si chiamer� cos�
 add_executable(${EXEC_NAME} ${SOURCES})
 add_executable(quantumTrajectories src/quantumTrajectories.cpp)
+add_executable(qTraj16sites src/qTraj16sites.cpp)
+
 
 
 # Aggiungi la cartella degli header di Root e Armadillo alla
@@ -48,16 +54,19 @@ add_executable(quantumTrajectories src/quantumTrajectories.cpp)
 # scrivi #include ...
 # In questo modo quando scrivi #include <armadillo> lui guarda
 # anche nella cartella di Armadillo
-target_include_directories(${EXEC_NAME} PUBLIC ${ROOT_INCLUDE_DIRS})
-target_include_directories(${EXEC_NAME} PUBLIC ${ARMADILLO_INCLUDE_DIRS})
+target_include_directories(corner2.0 PUBLIC ${ROOT_INCLUDE_DIRS})
+target_include_directories(corner2.0 PUBLIC ${ARMADILLO_INCLUDE_DIRS})
 
 target_include_directories(quantumTrajectories PUBLIC ${ROOT_INCLUDE_DIRS})
 target_include_directories(quantumTrajectories PUBLIC ${ARMADILLO_INCLUDE_DIRS})
 
-# Linka le librerie al tuo eseguibile
-target_link_libraries(${EXEC_NAME} ${ROOT_LIBRARIES} ${ARMADILLO_LIBRARIES})
+target_include_directories(qTraj16sites PUBLIC ${ROOT_INCLUDE_DIRS})
+target_include_directories(qTraj16sites PUBLIC ${ARMADILLO_INCLUDE_DIRS})
 
+# Linka le librerie al tuo eseguibile
+target_link_libraries(corner2.0 ${ROOT_LIBRARIES} ${ARMADILLO_LIBRARIES})
 target_link_libraries(quantumTrajectories ${ROOT_LIBRARIES} ${ARMADILLO_LIBRARIES})
+target_link_libraries(qTraj16sites ${ROOT_LIBRARIES} ${ARMADILLO_LIBRARIES})
 
 # Questa � un po' sottile. Per ora sappi solo che stiamo aggiungendo la cartella include
 # alla lista delle cartelle in cui guarda il compilatore

@@ -9,9 +9,11 @@
 #include <cmath>
 #include <algorithm>
 #include <fstream>
+#include "utility.hpp"
 
 using namespace std;
 using namespace arma;
+using namespace corner;
 
 System::System()
 {
@@ -119,6 +121,12 @@ Block System::Merge(const Block& b1, const Block& b2, bool IsLeft)
     // Renormalization
     cx_mat dm12 = kron(b1.dm, b2.dm);
     HMatrix DM12(dm12);
+    if(!DM12.IsHermitian()){cout << "Not hermitian\n";}
+    if(!DM12.TraceOne()){cout << "Not trace 1 = " << trace(dm12) <<"\n";}
+    if(!DM12.EigSumIsOne()){cout << "Sum not one\n";}
+    if(!DM12.EigRealPositive()){cout << "eigenvalues not real positive:" << DM12.GetEigenvalues() << endl;}
+    check(DM12.IsDM(), "System::Merge", "This is not a DM");
+    
     evectDM12 = DM12.GetONBasis();
 
     int Nkeep = std::min<int>(M, evectDM12.n_cols);
@@ -188,3 +196,30 @@ void System::GetExpValue(const char *file_name)
         cout << "<sigmaZ[" << i << "]> = " << arma::trace(Blocks[0].sigmaZ[i]*Blocks[0].dm) << endl;
     }
 }
+
+void System::Get2PCorrelationFunction(const char* file_CorrFunc, int i)
+{
+    ofstream myfile(file_CorrFunc);
+    double tr0 = real(arma::trace(Blocks[0].sigmaZ[i]*Blocks[0].dm));
+    
+    for(int j=0; j<Sites.size(); j++)
+    {
+        double tr1 = real(arma::trace(Blocks[0].sigmaZ[j]*Blocks[0].dm));
+        double tr01 = real(arma::trace(Blocks[0].sigmaZ[i]*Blocks[0].sigmaZ[j]*Blocks[0].dm));
+        myfile << j << "\t" << tr01-tr0*tr1 << endl;
+        cout << "tr01 = " << tr01 << "\t tr0= " << tr0 << "\t tr1 = " << tr1 << endl;
+    }
+
+}
+
+double System::Convergence(int m)
+{
+    cout << m << "\t" << real(arma::trace(Blocks[0].sigmaZ[0]*Blocks[0].dm)) << endl;  
+    return real(arma::trace(Blocks[0].sigmaZ[0]*Blocks[0].dm));  
+}
+
+//cx_double System::SpinCurrent(const char* file_SpinCurr, int i)
+//{
+//    ofstream myfile(file_SpinCurr);
+//
+//}

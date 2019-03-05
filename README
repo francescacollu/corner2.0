@@ -1,0 +1,3 @@
+otool -l <exec_name> -> check if the LC_RPATH points to the right library path. If not, install_name_tool (see the following line)
+
+install_name_tool -add_rpath /opt/root/lib/ corner2.0

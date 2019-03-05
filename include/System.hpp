@@ -48,6 +48,12 @@ public:
     // Calculate the expectation value of an operator
     void GetExpValue(const char *file_name);
 
+    //Calculate the two-point correlation function between two sites
+    void Get2PCorrelationFunction(const char* file_CorrFunc, int i);
+
+    //Calculate the convergence with respect to M
+    double Convergence(int m);
+
 private:
     static void PrintSize(arma::cx_mat&);
 };
