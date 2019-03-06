@@ -11,11 +11,12 @@ class HMatrix
     arma::cx_mat m;
     arma::cx_vec eigval;
     arma::cx_mat eigvec;
+    bool IsLiouvillian;
     
     arma::cx_vec Projection(arma::cx_vec oldvec, arma::cx_vec newvec);
 
 public:
-    HMatrix(const arma::cx_mat&);
+    HMatrix(const arma::cx_mat&, bool IsLiouvillian=false);
     int size() const;
     
     // Build an orthonormal basis from the hermitian matrix
@@ -44,6 +45,21 @@ public:
     
     // Has the matrix the properties of a density matrix?
     bool IsDM() const;
+
+        // Is the matrix hermitian?
+    static bool IsHermitian(const arma::cx_mat&);
+    
+    // Has the matrix trace one?
+    static bool TraceOne(const arma::cx_mat&);
+    
+    // Has the matrix's eigenvalues sum equals to one?
+    static bool EigSumIsOne(const arma::cx_mat&);
+
+    // Has the matrix real and positive eigenvalues?
+    static bool EigRealPositive(const arma::cx_mat&);
+    
+    // Has the matrix the properties of a density matrix?
+    static bool IsDM(const arma::cx_mat&);
 
     // Calculates the steady state density matrix with the right parameters
     arma::cx_mat GetSteadyStateDM();

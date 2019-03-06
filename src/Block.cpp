@@ -67,7 +67,7 @@ Block::Block(Site s)
 
     D = -0.5*kron(C[0].st()*conj(C[0]), I) - 0.5*kron(I, trans(C[0])*C[0]) + kron(conj(C[0]), C[0]);
     L = cx_double(0., 1.)*kron(H.st(), I) - cx_double(0., 1.)*kron(I, H) + D;
-    HMatrix liouv(L);
+    HMatrix liouv(L, true);
     //cout << "eigenvalues of L: " << liouv.GetEigenvalues() << endl;
     dm = liouv.GetSteadyStateDM();
     HMatrix DM(dm);

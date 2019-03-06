@@ -4,11 +4,12 @@
 using namespace arma;
 using namespace corner;
 
-HMatrix::HMatrix(const cx_mat& m)
+HMatrix::HMatrix(const cx_mat& m, bool IsLiouvillian)
 {
     check(m.n_rows == m.n_cols, "HMatrix::HMatrix", "Matrix must be square");
     this->m = m;
-    
+    this->IsLiouvillian = IsLiouvillian;
+
     // Get eigenvalues and eigenvectors in ascending order
     eig_gen(eigval, eigvec, m);
     
@@ -17,10 +18,15 @@ HMatrix::HMatrix(const cx_mat& m)
     eigvec = eigvec.cols(sorting_indices);
     eigval = eigval(sorting_indices);
 
-    cout << eigval << endl;
+    //cout << eigval << endl;
     
     check(approx_equal(m*eigvec.col(size() - 1), eigvec.col(size() - 1)*eigval(size() - 1), "absdiff", 1E-10), 
     "HMatrix::HMatrix", "Eigval/Eigvec mismatch");
+
+    if(!IsLiouvillian)
+    {
+        check(EigRealPositive(), "HMatrix::HMatrix", "eigenvalues not real or positive");
+    }
 }
 
 int HMatrix::size() const
@@ -30,6 +36,7 @@ int HMatrix::size() const
 
 arma::cx_mat HMatrix::GetONBasis()
 {
+    check(!IsLiouvillian, "HMatrix::GetONBasis", "Cannot call this method for a liouvillian matrix");
     // Basis matrix
     cx_mat B(size(), size());
     
@@ -63,7 +70,7 @@ arma::cx_mat HMatrix::GetONBasis()
             if (i == j)
             {
                 warning(corner::approx_equal(cdot(B.col(i), B.col(j)), cx_double(1., 0.)), "HMatrix::GetONBasis", "Vectors have no 1 norm");
-                //cout << cdot(B.col(i), B.col(j)) << endl;
+                cout << cdot(B.col(i), B.col(j)) << endl;
             }
             else
             {
@@ -96,6 +103,7 @@ int HMatrix::GetDegeneration(const int& i)
 
 cx_mat HMatrix::GramSchmidt(const cx_mat& deg_m)
 {
+    check(rank(deg_m) == std::min(deg_m.n_rows, deg_m.n_cols), "HMatrix::GramSchmidt", "Vectors not l.i.");
     cx_mat ON_degvec(deg_m.n_rows, deg_m.n_cols);
     
     for (int k = 0; k < deg_m.n_cols; k++)
@@ -128,12 +136,12 @@ cx_mat HMatrix::GramSchmidt(const cx_mat& deg_m)
         {
             if (i == j)
             {
-                warning(corner::approx_equal(cdot(ON_degvec.col(i), ON_degvec.col(j)),cx_double(1.,0.)), "HMatrix::GramSchmidt", "Vectors have no 1 norm");
+                check(corner::approx_equal(cdot(ON_degvec.col(i), ON_degvec.col(j)),cx_double(1.,0.)), "HMatrix::GramSchmidt", "Vectors have no 1 norm");
                 //cout << cdot(ON_degvec.col(i), ON_degvec.col(j)) << endl;
             }
             else
             {
-                warning(corner::approx_equal(cdot(ON_degvec.col(i), ON_degvec.col(j)),cx_double(0.,0.)), "HMatrix::GramSchmidt", "Vectors are not normal");
+                check(corner::approx_equal(cdot(ON_degvec.col(i), ON_degvec.col(j)),cx_double(0.,0.)), "HMatrix::GramSchmidt", "Vectors are not normal");
                 //cout << cdot(ON_degvec.col(i), ON_degvec.col(j)) <<endl;
             }
         }
@@ -190,35 +198,96 @@ bool HMatrix::IsDM() const
     return (IsHermitian() && TraceOne() && EigSumIsOne() && EigRealPositive());
 }
 
+bool HMatrix::IsHermitian(const cx_mat& m)
+{
+    return arma::approx_equal(trans(m), m, "absdiff", 1E-10);
+}
+
+bool HMatrix::TraceOne(const cx_mat& m)
+{
+    //cout << "Trace: " << trace(m) << endl;
+    return corner::approx_equal(trace(m), cx_double(1.,0.));
+}
+
+bool HMatrix::EigSumIsOne(const cx_mat& m)
+{
+    double sum=0.;
+    cx_vec eigval;
+    eig_gen(eigval, m);
+    for(int i=0; i<m.n_rows; i++)
+    {
+        sum+=real(eigval(i));
+    }
+    //cout << "Sum eigenvalues: " << sum << endl;
+    return corner::approx_equal(sum, cx_double(1.,0.));
+}
+
+bool HMatrix::EigRealPositive(const cx_mat& m) 
+{
+    cx_vec eigval;
+    eig_gen(eigval, m);
+    for(int i=0; i<m.n_rows; i++)
+    {
+        if(!approx_equal(imag(eigval(i)), cx_double(0., 0.), 1E-10) || real(eigval(i)) < -1E-10)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool HMatrix::IsDM(const cx_mat& m)
+{
+    return (IsHermitian(m) && TraceOne(m) && EigSumIsOne(m) && EigRealPositive(m));
+}
+
 arma::cx_mat HMatrix::GetSteadyStateDM()
 {
+    cout << __LINE__ << endl;
     //std::vector<cx_vec> eigvecs;
     cx_mat dm;
 
-    cout << "Degeneration: " << GetDegeneration(0) << endl;
+    //cout << "Degeneration: " << GetDegeneration(0) << endl;
 
+    cout << __LINE__ << endl;
     std::vector<cx_mat> eigvecs;
+    // for(int i=0; i<GetDegeneration(0); i++)
+    // {
+    //    eigvecs.push_back(eigvec.col(i));
+    // }
+
+    cout << __LINE__ << endl;
+    //cx_vec eigvecTot = 0.*eigvecs[0];
+    //for(int i=0; i<GetDegeneration(0); i++)
+    //{
+    //    eigvecTot += (1/float(GetDegeneration(0)))*eigvecs[i];
+    //}
+
     for(int i=0; i<GetDegeneration(0); i++)
     {
-        eigvecs.push_back(eigvec.col(i));
+        dm = reshape(eigvec.col(i), sqrt(size()), sqrt(size()));
+        if(IsDM(dm))
+        {
+            break;
+        }
     }
+    
+    check(dm.n_cols != 0 && dm.n_rows != 0, "HMatrix::GetSteadyStateDM", "Did not find a suitable DM");
 
-    cx_vec eigvecTot = 0.*eigvecs[0];
-    for(int i=0; i<GetDegeneration(0); i++)
-    {
-        eigvecTot += (1/float(GetDegeneration(0)))*eigvecs[i];
-    }
-
-    dm = reshape(eigvecTot, sqrt(size()), sqrt(size()));
+    cx_vec eigvecTot = eigvec.col(0);
+    cout << __LINE__ << endl;
     
     dm = (dm+trans(dm))/2.;
 
     check(!corner::approx_equal(cx_double(trace(dm)), cx_double(0.,0.)), "HMatrix::GetSteadyStateDM", "trace(dm) approximately equals to zero.");
     dm = dm/trace(dm);
 
+    cout << __LINE__ << endl;
     cout << "Tr(dm) = " << trace(dm) << endl;
+    cout << __LINE__ << endl;
     HMatrix DM(dm);
     
+    cout << __LINE__ << endl;
     if(!DM.IsDM())
     {
         cout << "HMatrix::GetSteadyStateDM -> The matrix does not satisfy one ore more than one property of the DM. A check is necessessary.\n";

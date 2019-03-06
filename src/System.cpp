@@ -30,18 +30,20 @@ void System::Add(Site s)
 
 void System::Simulate()
 {
+    cout << __LINE__ << endl;
     if(round(log2(Sites.size())) != log2(Sites.size()))
     {
         cout << "System::Simulate -> #sites must be a power of two.\n";
         exit(1);
     }
-
+    cout << __LINE__ << endl;
     //Initialize blocks with sites
     for(int i=0; i<Sites.size(); i++)
     {
         Blocks.push_back(Block(Sites[i]));
     }
 
+    cout << __LINE__ << endl;
     // Iterates until one block is left
     while(Blocks.size() != 1)
     {
@@ -87,7 +89,7 @@ Block System::Merge(const Block& b1, const Block& b2, bool IsLeft)
     Block MergedBlock;
 
     // Merging
-    MergedBlock.H = kron(b1.I, b2.H) + kron(b1.H, b2.I) - Jx*kron(b1.Sx, b2.Sx) - Jy*kron(b1.Sy, b2.Sy) - Jz*kron(b1.Sz, b2.Sz);
+    MergedBlock.H = kron(b1.I, b2.H) + kron(b1.H, b2.I) + Jx*kron(b1.Sx, b2.Sx) + Jy*kron(b1.Sy, b2.Sy) + Jz*kron(b1.Sz, b2.Sz);
     
     for(int k=0; k<2*b1.C.size(); k++)
     {
@@ -121,13 +123,15 @@ Block System::Merge(const Block& b1, const Block& b2, bool IsLeft)
     // Renormalization
     cx_mat dm12 = kron(b1.dm, b2.dm);
     HMatrix DM12(dm12);
+    cout << __LINE__ << endl;
     if(!DM12.IsHermitian()){cout << "Not hermitian\n";}
     if(!DM12.TraceOne()){cout << "Not trace 1 = " << trace(dm12) <<"\n";}
     if(!DM12.EigSumIsOne()){cout << "Sum not one\n";}
-    if(!DM12.EigRealPositive()){cout << "eigenvalues not real positive:" << DM12.GetEigenvalues() << endl;}
-    check(DM12.IsDM(), "System::Merge", "This is not a DM");
+    if(!DM12.EigRealPositive()){cout << "eigenvalues not real positive:" << endl;}
+    //check(DM12.IsDM(), "System::Merge", "This is not a DM");
     
     evectDM12 = DM12.GetONBasis();
+    cout << __LINE__ << endl;
 
     int Nkeep = std::min<int>(M, evectDM12.n_cols);
     cx_mat O = evectDM12.tail_cols(Nkeep);
@@ -138,6 +142,7 @@ Block System::Merge(const Block& b1, const Block& b2, bool IsLeft)
     MergedBlock.Sz = trans(O)*MergedBlock.Sz*O;
     MergedBlock.I = trans(O)*MergedBlock.I*O;
     
+    cout << __LINE__ << endl;
     vector<cx_mat> Dslice;
     for(int k=0; k<2*b1.C.size(); k++)
     {
@@ -148,6 +153,7 @@ Block System::Merge(const Block& b1, const Block& b2, bool IsLeft)
                                 + 2.*kron(conj(MergedBlock.C[k]),MergedBlock.C[k])));
     }
 
+    cout << __LINE__ << endl;
     MergedBlock.D = 0.*Dslice[0];
     for(int k=0; k<2*b1.C.size(); k++)
     {
@@ -156,9 +162,13 @@ Block System::Merge(const Block& b1, const Block& b2, bool IsLeft)
 
     MergedBlock.L = cx_double(0., 1.)*kron(MergedBlock.H.st(), MergedBlock.I) - cx_double(0., 1.)*kron(MergedBlock.I, MergedBlock.H) + MergedBlock.D;
 
-    HMatrix liouv(MergedBlock.L);
+    cout << __LINE__ << endl;
+    HMatrix liouv(MergedBlock.L, true);
+    cout << __LINE__ << endl;
     MergedBlock.dm = liouv.GetSteadyStateDM();
+    cout << __LINE__ << endl;
     HMatrix DM(MergedBlock.dm);
+    cout << __LINE__ << endl;
     MergedBlock.evectDM = DM.GetONBasis();
 
     return MergedBlock;
@@ -218,8 +228,8 @@ double System::Convergence(int m)
     return real(arma::trace(Blocks[0].sigmaZ[0]*Blocks[0].dm));  
 }
 
-//cx_double System::SpinCurrent(const char* file_SpinCurr, int i)
-//{
+// cx_double System::SpinCurrent(const char* file_SpinCurr, int i)
+// {
 //    ofstream myfile(file_SpinCurr);
-//
-//}
+
+// }

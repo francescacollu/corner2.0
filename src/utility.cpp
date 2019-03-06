@@ -1,12 +1,13 @@
 #include "utility.hpp"
 #include <iostream>
+#include <exception>
 
 void corner::check(const bool& condition, const char* class_name, const char* msg)
 {
     if (!condition)
     {
         std::cout << "ERROR in " << class_name << " : " << msg << std::endl;
-        exit(1);
+        throw std::exception();
     }
 }
 
