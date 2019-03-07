@@ -105,18 +105,27 @@ cx_mat HMatrix::GramSchmidt(const cx_mat& deg_m)
 {
     check(rank(deg_m) == std::min(deg_m.n_rows, deg_m.n_cols), "HMatrix::GramSchmidt", "Vectors not l.i.");
     cx_mat ON_degvec(deg_m.n_rows, deg_m.n_cols);
-    
+
     for (int k = 0; k < deg_m.n_cols; k++)
     {
-        // Sum of projections of previous ON eigenvectors
-        cx_vec proj_sum = zeros<cx_vec>(deg_m.n_rows);
+        ON_degvec.col(k) = deg_m.col(k);
         for (int p = 0; p < k ; p++)
         {
-            proj_sum += Projection(deg_m.col(k), ON_degvec.col(p));
+            ON_degvec.col(k) = ON_degvec.col(k) - Projection(ON_degvec.col(k), ON_degvec.col(p));
         }
-        
-        ON_degvec.col(k) = deg_m.col(k) - proj_sum;
     }
+    
+    // for (int k = 0; k < deg_m.n_cols; k++)
+    // {
+    //     // Sum of projections of previous ON eigenvectors
+    //     cx_vec proj_sum = zeros<cx_vec>(deg_m.n_rows);
+    //     for (int p = 0; p < k ; p++)
+    //     {
+    //         proj_sum += Projection(deg_m.col(k), ON_degvec.col(p));
+    //     }
+        
+    //     ON_degvec.col(k) = deg_m.col(k) - proj_sum;
+    // }
     
     check(ON_degvec.n_cols == deg_m.n_cols, "HMatrix::GramSchmidt", "New vector size is wrong");
     

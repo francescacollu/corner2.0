@@ -231,5 +231,11 @@ double System::Convergence(int m)
 // cx_double System::SpinCurrent(const char* file_SpinCurr, int i)
 // {
 //    ofstream myfile(file_SpinCurr);
+//     for(int j=0; j<Sites.size(); j++)
+//     {
+//         double sc = real(arma::trace(Blocks[0].sigmaZ[j]**Blocks[0].dm));
+//         myfile << j << "\t" << sc << endl;
+//         cout << j << "\t" << sc << endl;
+//     }
 
 // }

@@ -23,15 +23,6 @@ int main()
     TH1F *realZ5 = new TH1F("realZ[5]", "realZ[5]", 100, -7, 7);
     TH1F *realZ6 = new TH1F("realZ[6]", "realZ[6]", 100, -7, 7);
     TH1F *realZ7 = new TH1F("realZ[7]", "realZ[7]", 100, -7, 7);
-
-    // ofstream myfile0("qTrajSigmaZ[0].txt");
-    // ofstream myfile1("qTrajSigmaZ[1].txt");
-    // ofstream myfile2("qTrajSigmaZ[2].txt");
-    // ofstream myfile3("qTrajSigmaZ[3].txt");
-    // ofstream myfile4("qTrajSigmaZ[4].txt");
-    // ofstream myfile5("qTrajSigmaZ[5].txt");
-    // ofstream myfile6("qTrajSigmaZ[6].txt");
-    // ofstream myfile7("qTrajSigmaZ[7].txt");
     
     double Jx = 1., Jy = 0.5, Jz = 1.;
     double T = 100.;
@@ -54,11 +45,6 @@ int main()
 
     I << cx_double(1., 0.) << cx_double(0., 0.) << endr
         << cx_double(0., 0.) << cx_double(1., 0.) << endr;
-    
-    // sigmaZ[0] = kron(Sz, kron(I, kron(I, I)));
-    // sigmaZ[1] = kron(I, kron(Sz, kron(I, I)));
-    // sigmaZ[2] = kron(I, kron(I, kron(Sz, I)));
-    // sigmaZ[3] = kron(I, kron(I, kron(I, Sz)));
 
     cx_mat II;
     II = kron(I, kron(I, kron(I, kron(I, kron(I, kron(I, kron(I, I)))))));
@@ -80,35 +66,28 @@ int main()
     Cup << cx_double(0., 0.) << cx_double(1., 0.) << endr
         << cx_double(0., 0.) << cx_double(0., 0.) << endr;
 
-    // Cup = kron(Cup, kron(I, kron(I, I)));
-    // Cdown = kron(I, kron(I, kron(I, Cdown)));
     Cup = kron(Cup, kron(I, kron(I, kron(I, kron(I, kron(I, kron(I, I)))))));
     Cdown = kron(I, kron(I, kron(I, kron(I, kron(I, kron(I, kron(I, Cdown)))))));
 
     K = -0.5 * (arma::trans(Cup)*Cup + arma::trans(Cdown)*Cdown);
 
     cx_mat H;
-    // H = - Jx* (kron(Sx, kron(Sx, kron(I, I))) + kron(I, kron(Sx, kron(Sx, I))) +//
-    //      kron(I, kron(I, kron(Sx, Sx)))) - Jy * (kron(Sy, kron(Sy, kron(I, I))) +//
-    //      kron(I, kron(Sy, kron(Sy, I))) + kron(I, kron(I, kron(Sy, Sy)))) -//
-    //      Jz * (kron(Sz, kron(Sz, kron(I, I))) +  kron(I, kron(Sz, kron(Sz, I))) +//
-    //      kron(I, kron(I, kron(Sz, Sz))));
 
 
-    H = - Jx*( kron(Sx, kron(Sx, kron(I, kron(I, kron(I, kron(I, kron(I, I))))))) + 
+    H = Jx*( kron(Sx, kron(Sx, kron(I, kron(I, kron(I, kron(I, kron(I, I))))))) + 
                kron(I, kron(Sx, kron(Sx, kron(I, kron(I, kron(I, kron(I, I))))))) + 
                kron(I, kron(I, kron(Sx, kron(Sx, kron(I, kron(I, kron(I, I))))))) + 
                kron(I, kron(I, kron(I, kron(Sx, kron(Sx, kron(I, kron(I, I))))))) + 
                kron(I, kron(I, kron(I, kron(I, kron(Sx, kron(Sx, kron(I, I))))))) + 
                kron(I, kron(I, kron(I, kron(I, kron(I, kron(Sx, kron(Sx, I))))))) + 
-               kron(I, kron(I, kron(I, kron(I, kron(I, kron(I, kron(Sx, Sx))))))) ) - 
+               kron(I, kron(I, kron(I, kron(I, kron(I, kron(I, kron(Sx, Sx))))))) ) + 
           Jy*( kron(Sy, kron(Sy, kron(I, kron(I, kron(I, kron(I, kron(I, I))))))) + 
                kron(I, kron(Sy, kron(Sy, kron(I, kron(I, kron(I, kron(I, I))))))) + 
                kron(I, kron(I, kron(Sy, kron(Sy, kron(I, kron(I, kron(I, I))))))) + 
                kron(I, kron(I, kron(I, kron(Sy, kron(Sy, kron(I, kron(I, I))))))) + 
                kron(I, kron(I, kron(I, kron(I, kron(Sy, kron(Sy, kron(I, I))))))) + 
                kron(I, kron(I, kron(I, kron(I, kron(I, kron(Sy, kron(Sy, I))))))) + 
-               kron(I, kron(I, kron(I, kron(I, kron(I, kron(I, kron(Sy, Sy))))))) ) - 
+               kron(I, kron(I, kron(I, kron(I, kron(I, kron(I, kron(Sy, Sy))))))) ) +
           Jz*( kron(Sz, kron(Sz, kron(I, kron(I, kron(I, kron(I, kron(I, I))))))) + 
                kron(I, kron(Sz, kron(Sz, kron(I, kron(I, kron(I, kron(I, I))))))) + 
                kron(I, kron(I, kron(Sz, kron(Sz, kron(I, kron(I, kron(I, I))))))) + 
@@ -132,14 +111,14 @@ int main()
     cx_rowvec phi0T;
     std::vector<cx_vec> PHI;
 
-    std::vector<cx_double> SigmaZ0;
-    std::vector<cx_double> SigmaZ1;
-    std::vector<cx_double> SigmaZ2;
-    std::vector<cx_double> SigmaZ3;
-    std::vector<cx_double> SigmaZ4;
-    std::vector<cx_double> SigmaZ5;
-    std::vector<cx_double> SigmaZ6;
-    std::vector<cx_double> SigmaZ7;
+    //std::vector<cx_double> SigmaZ0;
+    //std::vector<cx_double> SigmaZ1;
+    //std::vector<cx_double> SigmaZ2;
+    //std::vector<cx_double> SigmaZ3;
+    //std::vector<cx_double> SigmaZ4;
+    //std::vector<cx_double> SigmaZ5;
+    //std::vector<cx_double> SigmaZ6;
+    //std::vector<cx_double> SigmaZ7;
 
     std::vector<cx_double> corrFunc0;
     std::vector<cx_double> corrFunc1;
@@ -200,61 +179,61 @@ int main()
 
         PHI.push_back(phi);
 
-        SigmaZ0.push_back((arma::trans(PHI.back())*sigmaZ[0]*PHI.back()).eval().at(0,0));
-        realZ0->Fill(real(SigmaZ0.back()));
+        // SigmaZ0.push_back((arma::trans(PHI.back())*sigmaZ[0]*PHI.back()).eval().at(0,0));
+        // realZ0->Fill(real(SigmaZ0.back()));
 
-        SigmaZ1.push_back((arma::trans(PHI.back())*sigmaZ[1]*PHI.back()).eval().at(0,0));
-        realZ1->Fill(real(SigmaZ1.back()));
+        // SigmaZ1.push_back((arma::trans(PHI.back())*sigmaZ[1]*PHI.back()).eval().at(0,0));
+        // realZ1->Fill(real(SigmaZ1.back()));
 
-        SigmaZ2.push_back((arma::trans(PHI.back())*sigmaZ[2]*PHI.back()).eval().at(0,0));
-        realZ2->Fill(real(SigmaZ2.back()));
+        // SigmaZ2.push_back((arma::trans(PHI.back())*sigmaZ[2]*PHI.back()).eval().at(0,0));
+        // realZ2->Fill(real(SigmaZ2.back()));
 
-        SigmaZ3.push_back((arma::trans(PHI.back())*sigmaZ[3]*PHI.back()).eval().at(0,0));
-        realZ3->Fill(real(SigmaZ3.back()));
+        // SigmaZ3.push_back((arma::trans(PHI.back())*sigmaZ[3]*PHI.back()).eval().at(0,0));
+        // realZ3->Fill(real(SigmaZ3.back()));
 
-        SigmaZ4.push_back((arma::trans(PHI.back())*sigmaZ[4]*PHI.back()).eval().at(0,0));
-        realZ4->Fill(real(SigmaZ4.back()));
+        // SigmaZ4.push_back((arma::trans(PHI.back())*sigmaZ[4]*PHI.back()).eval().at(0,0));
+        // realZ4->Fill(real(SigmaZ4.back()));
 
-        SigmaZ5.push_back((arma::trans(PHI.back())*sigmaZ[5]*PHI.back()).eval().at(0,0));
-        realZ5->Fill(real(SigmaZ5.back()));
+        // SigmaZ5.push_back((arma::trans(PHI.back())*sigmaZ[5]*PHI.back()).eval().at(0,0));
+        // realZ5->Fill(real(SigmaZ5.back()));
 
-        SigmaZ6.push_back((arma::trans(PHI.back())*sigmaZ[6]*PHI.back()).eval().at(0,0));
-        realZ6->Fill(real(SigmaZ6.back()));
+        // SigmaZ6.push_back((arma::trans(PHI.back())*sigmaZ[6]*PHI.back()).eval().at(0,0));
+        // realZ6->Fill(real(SigmaZ6.back()));
 
-        SigmaZ7.push_back((arma::trans(PHI.back())*sigmaZ[7]*PHI.back()).eval().at(0,0));
-        realZ7->Fill(real(SigmaZ7.back()));
+        // SigmaZ7.push_back((arma::trans(PHI.back())*sigmaZ[7]*PHI.back()).eval().at(0,0));
+        // realZ7->Fill(real(SigmaZ7.back()));
 
-        //corrFunc0.push_back(((trans(PHI.back())*sigmaZ[0]*sigmaZ[0]*PHI.back()).eval().at(0,0))
+        corrFunc0.push_back((trans(PHI.back())*sigmaZ[0]*sigmaZ[0]*PHI.back()).eval().at(0,0));
         //-((trans(PHI.back())*sigmaZ[0]*PHI.back())*(trans(PHI.back())*sigmaZ[0]*PHI.back())).eval().at(0,0));
-        //realZ0->Fill(real(corrFunc0.back()));
-//
-        //corrFunc1.push_back(((trans(PHI.back())*sigmaZ[0]*sigmaZ[1]*PHI.back()).eval().at(0,0))
+        realZ0->Fill(real(corrFunc0.back()));
+
+        corrFunc1.push_back((trans(PHI.back())*sigmaZ[0]*sigmaZ[1]*PHI.back()).eval().at(0,0));
         //-((trans(PHI.back())*sigmaZ[0]*PHI.back())*(trans(PHI.back())*sigmaZ[1]*PHI.back())).eval().at(0,0));
-        //realZ1->Fill(real(corrFunc1.back()));
-//
-        //corrFunc2.push_back(((trans(PHI.back())*sigmaZ[0]*sigmaZ[2]*PHI.back()).eval().at(0,0))
+        realZ1->Fill(real(corrFunc1.back()));
+
+        corrFunc2.push_back((trans(PHI.back())*sigmaZ[0]*sigmaZ[2]*PHI.back()).eval().at(0,0));
         //-((trans(PHI.back())*sigmaZ[0]*PHI.back())*(trans(PHI.back())*sigmaZ[2]*PHI.back())).eval().at(0,0));
-        //realZ2->Fill(real(corrFunc2.back()));
-//
-        //corrFunc3.push_back(((trans(PHI.back())*sigmaZ[0]*sigmaZ[3]*PHI.back()).eval().at(0,0))
+        realZ2->Fill(real(corrFunc2.back()));
+
+        corrFunc3.push_back((trans(PHI.back())*sigmaZ[0]*sigmaZ[3]*PHI.back()).eval().at(0,0));
         //-((trans(PHI.back())*sigmaZ[0]*PHI.back())*(trans(PHI.back())*sigmaZ[3]*PHI.back())).eval().at(0,0));
-        //realZ3->Fill(real(corrFunc3.back()));
-//
-        //corrFunc4.push_back(((trans(PHI.back())*sigmaZ[0]*sigmaZ[4]*PHI.back()).eval().at(0,0))
+        realZ3->Fill(real(corrFunc3.back()));
+
+        corrFunc4.push_back((trans(PHI.back())*sigmaZ[0]*sigmaZ[4]*PHI.back()).eval().at(0,0));
         //-((trans(PHI.back())*sigmaZ[0]*PHI.back())*(trans(PHI.back())*sigmaZ[4]*PHI.back())).eval().at(0,0));
-        //realZ4->Fill(real(corrFunc4.back()));
-//
-        //corrFunc5.push_back(((trans(PHI.back())*sigmaZ[0]*sigmaZ[5]*PHI.back()).eval().at(0,0))
+        realZ4->Fill(real(corrFunc4.back()));
+
+        corrFunc5.push_back((trans(PHI.back())*sigmaZ[0]*sigmaZ[5]*PHI.back()).eval().at(0,0));
         //-((trans(PHI.back())*sigmaZ[0]*PHI.back())*(trans(PHI.back())*sigmaZ[5]*PHI.back())).eval().at(0,0));
-        //realZ5->Fill(real(corrFunc5.back()));
-//
-        //corrFunc6.push_back(((trans(PHI.back())*sigmaZ[0]*sigmaZ[6]*PHI.back()).eval().at(0,0))
+        realZ5->Fill(real(corrFunc5.back()));
+
+        corrFunc6.push_back((trans(PHI.back())*sigmaZ[0]*sigmaZ[6]*PHI.back()).eval().at(0,0));
         //-((trans(PHI.back())*sigmaZ[0]*PHI.back())*(trans(PHI.back())*sigmaZ[6]*PHI.back())).eval().at(0,0));
-        //realZ6->Fill(real(corrFunc6.back()));
-//
-        //corrFunc7.push_back(((trans(PHI.back())*sigmaZ[0]*sigmaZ[7]*PHI.back()).eval().at(0,0))
+        realZ6->Fill(real(corrFunc6.back()));
+
+        corrFunc7.push_back((trans(PHI.back())*sigmaZ[0]*sigmaZ[7]*PHI.back()).eval().at(0,0));
         //-((trans(PHI.back())*sigmaZ[0]*PHI.back())*(trans(PHI.back())*sigmaZ[7]*PHI.back())).eval().at(0,0));
-        //realZ7->Fill(real(corrFunc7.back()));
+        realZ7->Fill(real(corrFunc7.back()));
     }
     std::cout << "PHI.size = " << PHI.size() << endl;
     std::cout << "N = " << N << endl;
@@ -292,23 +271,23 @@ int main()
     c7->Update();
 
     
-    c0->SaveAs("QTsigmaZ[0].pdf");
-    c1->SaveAs("QTsigmaZ[1].pdf");
-    c2->SaveAs("QTsigmaZ[2].pdf");
-    c3->SaveAs("QTsigmaZ[3].pdf");
-    c4->SaveAs("QTsigmaZ[4].pdf");
-    c5->SaveAs("QTsigmaZ[5].pdf");
-    c6->SaveAs("QTsigmaZ[6].pdf");
-    c7->SaveAs("QTsigmaZ[7].pdf");
+    // c0->SaveAs("QTsigmaZ[0].pdf");
+    // c1->SaveAs("QTsigmaZ[1].pdf");
+    // c2->SaveAs("QTsigmaZ[2].pdf");
+    // c3->SaveAs("QTsigmaZ[3].pdf");
+    // c4->SaveAs("QTsigmaZ[4].pdf");
+    // c5->SaveAs("QTsigmaZ[5].pdf");
+    // c6->SaveAs("QTsigmaZ[6].pdf");
+    // c7->SaveAs("QTsigmaZ[7].pdf");
 
-    //c0->SaveAs("QTCorrFunct[0].pdf");
-    //c1->SaveAs("QTCorrFunct[1].pdf");
-    //c2->SaveAs("QTCorrFunct[2].pdf");
-    //c3->SaveAs("QTCorrFunct[3].pdf");
-    //c4->SaveAs("QTCorrFunct[4].pdf");
-    //c5->SaveAs("QTCorrFunct[5].pdf");
-    //c6->SaveAs("QTCorrFunct[6].pdf");
-    //c7->SaveAs("QTCorrFunct[7].pdf");
+    c0->SaveAs("QTCorrFunct[0].pdf");
+    c1->SaveAs("QTCorrFunct[1].pdf");
+    c2->SaveAs("QTCorrFunct[2].pdf");
+    c3->SaveAs("QTCorrFunct[3].pdf");
+    c4->SaveAs("QTCorrFunct[4].pdf");
+    c5->SaveAs("QTCorrFunct[5].pdf");
+    c6->SaveAs("QTCorrFunct[6].pdf");
+    c7->SaveAs("QTCorrFunct[7].pdf");
 
     app->Run();
 
