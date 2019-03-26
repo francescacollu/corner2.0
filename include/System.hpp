@@ -49,10 +49,13 @@ public:
     void GetExpValue(const char *file_name);
 
     //Calculate the two-point correlation function between two sites
-    void Get2PCorrelationFunction(const char* file_CorrFunc, int i);
+    void Get2PCorrelationFunction(const char* file_CorrFunc);
 
     //Calculate the convergence with respect to M
     double Convergence(int m);
+
+    //Calculate spin current
+    void GetSpinCurrent(const char* file_SpinCurr);
 
 private:
     static void PrintSize(arma::cx_mat&);

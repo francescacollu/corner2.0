@@ -46,7 +46,7 @@ set(SOURCES
 add_executable(${EXEC_NAME} ${SOURCES})
 add_executable(quantumTrajectories src/quantumTrajectories.cpp)
 add_executable(qTraj16sites src/qTraj16sites.cpp)
-
+add_executable(plotter src/plotter.cpp src/utility.cpp)
 
 
 # Aggiungi la cartella degli header di Root e Armadillo alla
@@ -63,10 +63,14 @@ target_include_directories(quantumTrajectories PUBLIC ${ARMADILLO_INCLUDE_DIRS})
 target_include_directories(qTraj16sites PUBLIC ${ROOT_INCLUDE_DIRS})
 target_include_directories(qTraj16sites PUBLIC ${ARMADILLO_INCLUDE_DIRS})
 
+target_include_directories(plotter PUBLIC ${ROOT_INCLUDE_DIRS})
+target_include_directories(plotter PUBLIC ${ARMADILLO_INCLUDE_DIRS})
+
 # Linka le librerie al tuo eseguibile
 target_link_libraries(corner2.0 ${ROOT_LIBRARIES} ${ARMADILLO_LIBRARIES})
 target_link_libraries(quantumTrajectories ${ROOT_LIBRARIES} ${ARMADILLO_LIBRARIES})
 target_link_libraries(qTraj16sites ${ROOT_LIBRARIES} ${ARMADILLO_LIBRARIES})
+target_link_libraries(plotter ${ROOT_LIBRARIES} ${ARMADILLO_LIBRARIES})
 
 # Questa � un po' sottile. Per ora sappi solo che stiamo aggiungendo la cartella include
 # alla lista delle cartelle in cui guarda il compilatore
@@ -75,3 +79,9 @@ target_include_directories(${EXEC_NAME} PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
+
+target_include_directories(plotter PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+

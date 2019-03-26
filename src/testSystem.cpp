@@ -3,6 +3,7 @@
 #include <TGraph.h>
 #include <TCanvas.h>
 #include <TApplication.h>
+#include <TAxis.h>
 #include <cstdlib>
 #include <string>
 
@@ -11,25 +12,28 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     TApplication* app = new TApplication("app", 0, 0);
-    TCanvas* c = new TCanvas;
 
     int M = atoi(argv[1]);
     float Jx = atof(argv[2]);
     float Jy = atof(argv[3]);
     float Jz = atof(argv[4]);
-    int cod = atoi(argv[5]); //int needed to mark this output
 
-    string s = "../out/SpinProfile_s8_M";
+    string s = "../../RESULTS/CSR/s16_M";
     s.append(argv[1]);
-    s.append("JxJyJz");
-    s.append(argv[5]);
-    s.append(".txt");
+    s.append("J");
+    s.append(argv[2]);
+    s.append(argv[3]);
+    s.append(argv[4]);
 
-    const char* output = s.c_str();
+    // const char* out = s.c_str();
 
-    ofstream myfile(output);
+    // string stxt = s;
+    // stxt.append(".txt");
 
-    cout << __LINE__ << endl;
+    // const char* outTxt = stxt.c_str();
+
+    // ofstream myfile(outTxt);
+
     System sy;
 
     ///////////////////////////////////
@@ -55,8 +59,16 @@ int main(int argc, char *argv[])
     //    myfile << M << "\t" << sy.Convergence(M) << endl;
     // }
     ///////////////////////////////////
-    //////////////////////////////////
+    ///////////////////////////////////
 
+    // sy.Add(Site(ZUp));
+    // sy.Add(Site());
+    // sy.Add(Site());
+    // sy.Add(Site());
+    // sy.Add(Site());
+    // sy.Add(Site());
+    // sy.Add(Site());
+    // sy.Add(Site());
     sy.Add(Site(ZUp));
     sy.Add(Site());
     sy.Add(Site());
@@ -66,29 +78,62 @@ int main(int argc, char *argv[])
     sy.Add(Site());
     sy.Add(Site(ZDown));
 
-    cout << __LINE__ << endl;
     sy.SetCouplingConstants(Jx, Jy, Jz);
     sy.SetCornerSize(M);
-    cout << __LINE__ << endl;
     sy.Simulate();
-    cout << __LINE__ << endl;
-    sy.GetExpValue(output);
-    //sy.Get2PCorrelationFunction(output, 0);
 
+    string sLM = s;
+    sLM.append("_LM.txt");
+    const char* outLM = sLM.c_str();
+    sy.GetExpValue(outLM);
 
-    TGraph *p = new TGraph(output);
-    p->SetMarkerStyle(20);
-    p->SetMarkerColor(kBlue);
-    p->SetLineWidth(2);
-    p->Draw("AP");
-    p->SetTitle(output);
-    c->SetGrid();
-    //p->GetXaxis()->SetTitle("M");
-    //p->GetYaxis()->SetTitle("<Sz>");
+    string sCorrFunc = s;
+    sCorrFunc.append("_CorrFunc.txt");
+    const char* outCorrFunc = sCorrFunc.c_str();
+    sy.Get2PCorrelationFunction(outCorrFunc);
 
-    c->Update();
-    c->SaveAs("../../RESULTS/CSR/LM/SpinProfile_s8_M60_1Up_1DownJxJyJz1050.pdf");
+    string sSpinCurr = s;
+    sSpinCurr.append("_SpinCurr.txt"); 
+    const char* outSpinCurr = sSpinCurr.c_str();
+    sy.GetSpinCurrent(outSpinCurr);
+
+    TCanvas* cLM = new TCanvas;
+    TGraph *pLM = new TGraph(outLM);
+    pLM->SetMarkerStyle(20);
+    pLM->SetMarkerColor(kBlue);
+    pLM->SetLineWidth(1);
+    pLM->Draw("ALP");
+    pLM->SetTitle(outLM);
+    pLM->GetXaxis()->SetTitle("site_index");
+    pLM->GetYaxis()->SetTitle("<Sz>");
+    cLM->SetGrid();
+    cLM->Update();
+
+    TCanvas* cSC = new TCanvas;
+    TGraph *pSC = new TGraph(outSpinCurr);
+    pSC->SetMarkerStyle(20);
+    pSC->SetMarkerColor(kBlue);
+    pSC->SetLineWidth(1);
+    pSC->Draw("ALP");
+    pSC->SetTitle(outSpinCurr);
+    pSC->GetXaxis()->SetTitle("site_index");
+    pSC->GetYaxis()->SetTitle("<J>");
+    cSC->SetGrid();
+    cSC->Update();
+
+    string sLMpdf = s;
+    sLMpdf.append("_LM.pdf");
+    const char* outLMPdf = sLMpdf.c_str();
+    cLM->SaveAs(outLMPdf);
+
+    string sSCpdf = s;
+    sSCpdf.append("_SpinCurr.pdf");
+    const char* outSCPdf = sSCpdf.c_str();
+    cLM->SaveAs(outSCPdf);
+
     app->Run();
+
+    delete cLM;
 
     return 0;
 }

@@ -14,6 +14,8 @@ Block::Block(Site s)
     // Initial fill of dissipator: one element
     C.push_back(arma::cx_mat());
     sigmaZ.push_back(arma::cx_mat());
+    sigmaX.push_back(arma::cx_mat());
+    sigmaY.push_back(arma::cx_mat());
 
     I << cx_double(1., 0.) << cx_double(0., 0.) << endr 
       << cx_double(0., 0.) << cx_double(1., 0.) << endr;
@@ -32,6 +34,12 @@ Block::Block(Site s)
 
     sigmaZ[0] << cx_double(0.5, 0.) << cx_double(0., 0.) << endr 
               << cx_double(0., 0.) << cx_double(-0.5, 0.) << endr;
+    
+    sigmaX[0] << cx_double(0., 0.) << cx_double(0.5, 0.) << endr 
+              << cx_double(0.5, 0.) << cx_double(0., 0.) << endr;
+
+    sigmaY[0] << cx_double(0., 0.) << cx_double(0., -0.5) << endr 
+              << cx_double(0., 0.5) << cx_double(0., 0.) << endr;
 
     
     if (s.GetDissipator() == Empty)

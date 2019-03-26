@@ -19,9 +19,22 @@ HMatrix::HMatrix(const cx_mat& m, bool IsLiouvillian)
     eigval = eigval(sorting_indices);
 
     //cout << eigval << endl;
-    
-    check(approx_equal(m*eigvec.col(size() - 1), eigvec.col(size() - 1)*eigval(size() - 1), "absdiff", 1E-10), 
-    "HMatrix::HMatrix", "Eigval/Eigvec mismatch");
+    int i = 0;
+    while (i < size())
+    {
+        int degeneration = GetDegeneration(i);
+
+        cx_double lambda = eigval(i);
+
+        for (int j = 0; j < degeneration; j++)
+        {
+            check(approx_equal(eigval(i + j), lambda), "HMatrix::HMatrix", "Degenerate eigvals are not aligned");
+            check(approx_equal(m*eigvec.col(i + j), eigvec.col(i + j)*lambda, "absdiff", 1E-10), 
+                "HMatrix::HMatrix", "Eigval/Eigvec mismatch");
+        }
+
+        i += degeneration;
+    }
 
     if(!IsLiouvillian)
     {
@@ -70,7 +83,7 @@ arma::cx_mat HMatrix::GetONBasis()
             if (i == j)
             {
                 warning(corner::approx_equal(cdot(B.col(i), B.col(j)), cx_double(1., 0.)), "HMatrix::GetONBasis", "Vectors have no 1 norm");
-                cout << cdot(B.col(i), B.col(j)) << endl;
+                //cout << cdot(B.col(i), B.col(j)) << endl;
             }
             else
             {
@@ -113,6 +126,7 @@ cx_mat HMatrix::GramSchmidt(const cx_mat& deg_m)
         {
             ON_degvec.col(k) = ON_degvec.col(k) - Projection(ON_degvec.col(k), ON_degvec.col(p));
         }
+        ON_degvec.col(k) = ON_degvec.col(k) / sqrt(cdot(ON_degvec.col(k),ON_degvec.col(k)));
     }
     
     // for (int k = 0; k < deg_m.n_cols; k++)
@@ -252,20 +266,17 @@ bool HMatrix::IsDM(const cx_mat& m)
 
 arma::cx_mat HMatrix::GetSteadyStateDM()
 {
-    cout << __LINE__ << endl;
     //std::vector<cx_vec> eigvecs;
     cx_mat dm;
 
     //cout << "Degeneration: " << GetDegeneration(0) << endl;
 
-    cout << __LINE__ << endl;
     std::vector<cx_mat> eigvecs;
     // for(int i=0; i<GetDegeneration(0); i++)
     // {
     //    eigvecs.push_back(eigvec.col(i));
     // }
 
-    cout << __LINE__ << endl;
     //cx_vec eigvecTot = 0.*eigvecs[0];
     //for(int i=0; i<GetDegeneration(0); i++)
     //{
@@ -284,19 +295,14 @@ arma::cx_mat HMatrix::GetSteadyStateDM()
     check(dm.n_cols != 0 && dm.n_rows != 0, "HMatrix::GetSteadyStateDM", "Did not find a suitable DM");
 
     cx_vec eigvecTot = eigvec.col(0);
-    cout << __LINE__ << endl;
     
     dm = (dm+trans(dm))/2.;
 
     check(!corner::approx_equal(cx_double(trace(dm)), cx_double(0.,0.)), "HMatrix::GetSteadyStateDM", "trace(dm) approximately equals to zero.");
     dm = dm/trace(dm);
 
-    cout << __LINE__ << endl;
-    cout << "Tr(dm) = " << trace(dm) << endl;
-    cout << __LINE__ << endl;
     HMatrix DM(dm);
     
-    cout << __LINE__ << endl;
     if(!DM.IsDM())
     {
         cout << "HMatrix::GetSteadyStateDM -> The matrix does not satisfy one ore more than one property of the DM. A check is necessessary.\n";

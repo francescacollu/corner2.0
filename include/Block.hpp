@@ -16,6 +16,8 @@ class Block
 {
     std::vector<arma::cx_mat> C; // Dissipator
     std::vector<arma::cx_mat> sigmaZ;
+    std::vector<arma::cx_mat> sigmaX;
+    std::vector<arma::cx_mat> sigmaY;
     arma::cx_mat I;
     arma::cx_mat Sx;
     arma::cx_mat Sy;
