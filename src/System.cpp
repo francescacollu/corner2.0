@@ -1,10 +1,3 @@
-//
-//  System.cpp
-//  
-//
-//  Created by Francesca Collu on 11/11/2018.
-//
-
 #include "System.hpp"
 #include <cmath>
 #include <algorithm>
@@ -127,7 +120,7 @@ Block System::Merge(const Block& b1, const Block& b2, bool IsLeft)
     if(!DM12.IsHermitian()){cout << "Not hermitian\n";}
     if(!DM12.TraceOne()){cout << "Not trace 1 = " << trace(dm12) <<"\n";}
     if(!DM12.EigSumIsOne()){cout << "Sum not one\n";}
-    if(!DM12.EigRealPositive()){cout << "eigenvalues not real positive:" << endl;}
+    if(!DM12.EigRealPositive()){cout << "eigenvalues not real positive:" << DM12.GetEigenvalues() << endl;}
     //check(DM12.IsDM(), "System::Merge", "This is not a DM");
     
     evectDM12 = DM12.GetONBasis();

@@ -1,8 +1,15 @@
 # Nome del progetto
 project(Tesi)
 
+
 # Setta una variabile di nome EXEC_NAME uguale a StructuredCorner
 set(EXEC_NAME corner2.0)
+SET(ROOT_PATH "" CACHE STRING "path of ROOT base folder")
+list(APPEND CMAKE_PREFIX_PATH ${ROOT_PATH}/cmake)
+
+SET(ARMADILLO_PATH "" CACHE STRING "path of Armadillo base folder")
+list(APPEND CMAKE_PREFIX_PATH ${ARMADILLO_PATH})
+message("Uvy module path: ${CMAKE_PREFIX_PATH}")
 
 # Minima versione di CMake richiesta per buildare il tuo progetto
 # Serve almeno la 2.8.12 per usare i comandi target_link_libraries ecc...
@@ -15,7 +22,10 @@ set(CMAKE_CXX_STANDARD 11)
 # Trova ROOT e ARMADILLO e definisce delle variabili tipo ROOT_INCLUDE_DIRS ecc...
 # che ti servono per linkarle al tuo eseguibile. Se non lo trova ti d� errore
 # perch� gli ho detto che sono REQUIRED
-find_package(ROOT REQUIRED)
+find_package(ROOT REQUIRED COMPONENTS Graf Gpad)
+
+set(ROOT_ALL_LIBRARIES ${ROOT_LIBRARIES})
+
 find_package(Armadillo REQUIRED)
 message("ARMADILLO LIBRARY PATH: " ${ARMADILLO_LIBRARIES})
 
@@ -45,7 +55,6 @@ set(SOURCES
 # l'eseguibile si chiamer� cos�
 add_executable(${EXEC_NAME} ${SOURCES})
 add_executable(quantumTrajectories src/quantumTrajectories.cpp)
-add_executable(qTraj16sites src/qTraj16sites.cpp)
 add_executable(plotter src/plotter.cpp src/utility.cpp)
 
 
@@ -60,17 +69,15 @@ target_include_directories(corner2.0 PUBLIC ${ARMADILLO_INCLUDE_DIRS})
 target_include_directories(quantumTrajectories PUBLIC ${ROOT_INCLUDE_DIRS})
 target_include_directories(quantumTrajectories PUBLIC ${ARMADILLO_INCLUDE_DIRS})
 
-target_include_directories(qTraj16sites PUBLIC ${ROOT_INCLUDE_DIRS})
-target_include_directories(qTraj16sites PUBLIC ${ARMADILLO_INCLUDE_DIRS})
-
 target_include_directories(plotter PUBLIC ${ROOT_INCLUDE_DIRS})
 target_include_directories(plotter PUBLIC ${ARMADILLO_INCLUDE_DIRS})
 
 # Linka le librerie al tuo eseguibile
-target_link_libraries(corner2.0 ${ROOT_LIBRARIES} ${ARMADILLO_LIBRARIES})
-target_link_libraries(quantumTrajectories ${ROOT_LIBRARIES} ${ARMADILLO_LIBRARIES})
-target_link_libraries(qTraj16sites ${ROOT_LIBRARIES} ${ARMADILLO_LIBRARIES})
-target_link_libraries(plotter ${ROOT_LIBRARIES} ${ARMADILLO_LIBRARIES})
+target_link_libraries(corner2.0 ${ROOT_ALL_LIBRARIES} ${ARMADILLO_LIBRARIES})
+target_link_libraries(quantumTrajectories ${ROOT_ALL_LIBRARIES} ${ARMADILLO_LIBRARIES})
+target_link_libraries(plotter ${ROOT_ALL_LIBRARIES} ${ARMADILLO_LIBRARIES})
+
+message("ROOT libraries path: ${ROOT_ALL_LIBRARIES}")
 
 # Questa � un po' sottile. Per ora sappi solo che stiamo aggiungendo la cartella include
 # alla lista delle cartelle in cui guarda il compilatore

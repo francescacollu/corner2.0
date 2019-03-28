@@ -61,15 +61,15 @@ int main(int argc, char *argv[])
     ///////////////////////////////////
     ///////////////////////////////////
 
-    // sy.Add(Site(ZUp));
-    // sy.Add(Site());
-    // sy.Add(Site());
-    // sy.Add(Site());
-    // sy.Add(Site());
-    // sy.Add(Site());
-    // sy.Add(Site());
-    // sy.Add(Site());
     sy.Add(Site(ZUp));
+    sy.Add(Site());
+    sy.Add(Site());
+    sy.Add(Site());
+    sy.Add(Site());
+    sy.Add(Site());
+    sy.Add(Site());
+    sy.Add(Site());
+    sy.Add(Site());
     sy.Add(Site());
     sy.Add(Site());
     sy.Add(Site());

@@ -28,9 +28,9 @@ HMatrix::HMatrix(const cx_mat& m, bool IsLiouvillian)
 
         for (int j = 0; j < degeneration; j++)
         {
-            check(approx_equal(eigval(i + j), lambda), "HMatrix::HMatrix", "Degenerate eigvals are not aligned");
-            check(approx_equal(m*eigvec.col(i + j), eigvec.col(i + j)*lambda, "absdiff", 1E-10), 
-                "HMatrix::HMatrix", "Eigval/Eigvec mismatch");
+            //check(approx_equal(eigval(i + j), lambda), "HMatrix::HMatrix", "Degenerate eigvals are not aligned");
+            //check(approx_equal(m*eigvec.col(i + j), eigvec.col(i + j)*lambda, "absdiff", 1E-10), 
+            //    "HMatrix::HMatrix", "Eigval/Eigvec mismatch");
         }
 
         i += degeneration;
@@ -38,7 +38,7 @@ HMatrix::HMatrix(const cx_mat& m, bool IsLiouvillian)
 
     if(!IsLiouvillian)
     {
-        check(EigRealPositive(), "HMatrix::HMatrix", "eigenvalues not real or positive");
+        //check(EigRealPositive(), "HMatrix::HMatrix", "eigenvalues not real or positive");
     }
 }
 
@@ -109,7 +109,6 @@ int HMatrix::GetDegeneration(const int& i)
         if (corner::approx_equal(eigval(k), lambda))
             degeneration++;
     }
-    //cout << "Degeneration: " << degeneration << endl;
     
     return degeneration;
 }
