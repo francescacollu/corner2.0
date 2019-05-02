@@ -45,7 +45,7 @@ void corner::groupWithSameAbs(std::vector<eigenV>& eV)
 
 void corner::groupWithSameReal(std::vector<eigenV>::iterator beg, std::vector<eigenV>::iterator end)
 {
-    auto itr = beg;
+  std::vector<eigenV>::iterator itr = beg;
 
     while (itr != end)
     {
@@ -53,7 +53,7 @@ void corner::groupWithSameReal(std::vector<eigenV>::iterator beg, std::vector<ei
 
         // Count how many eigenvalues of equal real part are there
         int count_equal_real = 0;
-        for (auto itr2 = itr; itr2 != end && approx_equal(current_real, std::real(itr2->eigenvalue)); itr2++)
+        for (std::vector<eigenV>::iterator itr2 = itr; itr2 != end && approx_equal(current_real, std::real(itr2->eigenvalue)); itr2++)
         {
             count_equal_real++;
         }     

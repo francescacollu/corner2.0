@@ -7,8 +7,12 @@ set(EXEC_NAME corner2.0)
 SET(ROOT_PATH "" CACHE STRING "path of ROOT base folder")
 list(APPEND CMAKE_PREFIX_PATH ${ROOT_PATH}/cmake)
 
+message("Setting ROOT Path: ${ROOT_PATH}")
+
 SET(ARMADILLO_PATH "" CACHE STRING "path of Armadillo base folder")
 list(APPEND CMAKE_PREFIX_PATH ${ARMADILLO_PATH})
+
+message("CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
 
 SET(ARPACK_LIBRARY "" CACHE STRING "path of Arpack library")
 
