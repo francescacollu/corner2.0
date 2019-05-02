@@ -4,13 +4,14 @@
 
 #pragma once
 
-#include<armadillo>
+#include <armadillo>
+#include <vector>
+#include "eigenV.hpp"
 
 class HMatrix
 {
     arma::cx_mat m;
-    arma::cx_vec eigval;
-    arma::cx_mat eigvec;
+    std::vector<corner::eigenV> eV;
     bool IsLiouvillian;
     
     arma::cx_vec Projection(arma::cx_vec oldvec, arma::cx_vec newvec);
@@ -29,7 +30,7 @@ public:
     arma::cx_mat GramSchmidt(const arma::cx_mat&);
     
     //Get vector of sorted eigenvalues
-    const arma::cx_vec& GetEigenvalues() const;
+    arma::cx_vec GetEigenvalues() const;
     
     // Is the matrix hermitian?
     bool IsHermitian() const;

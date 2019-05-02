@@ -48,6 +48,20 @@ bool corner::approx_equal(arma::cx_double val1, arma::cx_double val2, double tol
     return false;
 }
 
+bool corner::approx_equal(const arma::cx_vec& v1, const arma::cx_vec& v2, double tol)
+{
+    corner::check(v1.size() == v2.size(), "approx_equal", "Vectors must be of same size");
+
+    for (int i = 0; i < v1.size(); i++)
+    {
+        if (abs(v1(i) - v2(i)) > tol)
+            return false;
+    }
+
+    return true;
+}
+
+
 std::vector<std::string> corner::split(const std::string& s, char delimiter)
 {
    std::vector<std::string> tokens;

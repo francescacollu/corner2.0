@@ -1,5 +1,6 @@
 #include "HMatrix.hpp"
 #include "utility.hpp"
+#include <algorithm>
 
 using namespace arma;
 using namespace corner;
@@ -9,28 +10,52 @@ HMatrix::HMatrix(const cx_mat& m, bool IsLiouvillian)
     check(m.n_rows == m.n_cols, "HMatrix::HMatrix", "Matrix must be square");
     this->m = m;
     this->IsLiouvillian = IsLiouvillian;
+    cx_vec eigval;
+    cx_mat eigvec;
 
     // Get eigenvalues and eigenvectors in ascending order
     eig_gen(eigval, eigvec, m);
-    
-    uvec sorting_indices = stable_sort_index(eigval);
-    
-    eigvec = eigvec.cols(sorting_indices);
-    eigval = eigval(sorting_indices);
 
-    //cout << eigval << endl;
+    for(int i = 0; i < eV.size(); i++)
+    {
+       check(approx_equal(m*(eigvec.col(i)), eigvec.col(i)*eigval(i), "absdiff", 1E-3), "HMatrix::HMatrix", "Pre-sort Eigval/Eigvec mismatch");
+       //cout << i << endl;
+    }
+
+    for(int i = 0; i < eigval.n_rows; i++)
+    {
+        corner::eigenV e;
+        e.eigenvalue = eigval(i);
+        e.eigenvector = eigvec.col(i);
+        eV.push_back(e);
+    }
+
+    // Sort in lambda absolute value 
+    // Problem: it could sort it like this: 1 -1 1 1 2 ...    
+    std::sort(eV.begin(), eV.end(), sortByAbs());
+
+    // Group eigenvalues with same value to solve the problem
+    corner::groupWithSameAbs(eV);
+
+
+
+    for(int i = 0; i < eV.size(); i++)
+    {
+        check(approx_equal(m*(eV[i].eigenvector), eV[i].eigenvector*eV[i].eigenvalue, "absdiff", 1E-3), "HMatrix::HMatrix", "Eigval/Eigvec mismatch");
+        //cout << i << endl;
+    }
+
     int i = 0;
     while (i < size())
     {
         int degeneration = GetDegeneration(i);
 
-        cx_double lambda = eigval(i);
+        cx_double lambda = eV[i].eigenvalue;
 
         for (int j = 0; j < degeneration; j++)
         {
-            //check(approx_equal(eigval(i + j), lambda), "HMatrix::HMatrix", "Degenerate eigvals are not aligned");
-            //check(approx_equal(m*eigvec.col(i + j), eigvec.col(i + j)*lambda, "absdiff", 1E-10), 
-            //    "HMatrix::HMatrix", "Eigval/Eigvec mismatch");
+            check(approx_equal(eV[i+j].eigenvalue, lambda), "HMatrix::HMatrix", "Degenerate eigvals are not aligned");
+            check(approx_equal(m*eV[i+j].eigenvector, eV[i+j].eigenvector*lambda, "absdiff", 1E-3), "HMatrix::HMatrix", "Eigval/Eigvec mismatch");
         }
 
         i += degeneration;
@@ -38,7 +63,7 @@ HMatrix::HMatrix(const cx_mat& m, bool IsLiouvillian)
 
     if(!IsLiouvillian)
     {
-        //check(EigRealPositive(), "HMatrix::HMatrix", "eigenvalues not real or positive");
+        check(EigRealPositive(), "HMatrix::HMatrix", "eigenvalues not real or positive");
     }
 }
 
@@ -63,7 +88,7 @@ arma::cx_mat HMatrix::GetONBasis()
         
         for (int k = i; k < i + degeneration; k++)
         {
-            degvec.col(k - i) = eigvec.col(k);
+            degvec.col(k - i) = eV[k].eigenvector;
         }
         
         // Orthonormalization via Gram-Schmidt algorithm
@@ -101,12 +126,12 @@ arma::cx_mat HMatrix::GetONBasis()
 
 int HMatrix::GetDegeneration(const int& i)
 {
-    const cx_double lambda = eigval(i);
+    const cx_double lambda = eV[i].eigenvalue;
     int degeneration = 0;
     
     for (int k = 0; k < size(); k++)
     {
-        if (corner::approx_equal(eigval(k), lambda))
+        if (corner::approx_equal(eV[k].eigenvalue, lambda))
             degeneration++;
     }
     
@@ -176,9 +201,14 @@ arma::cx_vec HMatrix::Projection(cx_vec oldvec, cx_vec newvec)
     return (cdot(newvec, oldvec) / cdot(newvec,newvec))*newvec;
 }
 
-const arma::cx_vec& HMatrix::GetEigenvalues() const
+arma::cx_vec HMatrix::GetEigenvalues() const
 {
-    return eigval;
+    cx_vec v;
+    for (int i = 0; i < eV.size(); i++)
+    {
+        v(i) = eV[i].eigenvalue;
+    }
+    return v;
 }
 
 bool HMatrix::IsHermitian() const
@@ -197,7 +227,7 @@ bool HMatrix::EigSumIsOne() const
     double sum=0.;
     for(int i=0; i<m.n_rows; i++)
     {
-        sum+=real(eigval(i));
+        sum+=real(eV[i].eigenvalue);
     }
     //cout << "Sum eigenvalues: " << sum << endl;
     return corner::approx_equal(sum, cx_double(1.,0.));
@@ -207,8 +237,9 @@ bool HMatrix::EigRealPositive() const
 {
     for(int i=0; i<m.n_rows; i++)
     {
-        if(!approx_equal(imag(eigval(i)), cx_double(0., 0.), 1E-10) || real(eigval(i)) < -1E-10)
+        if(!approx_equal(imag(eV[i].eigenvalue), 0.0, 1E-10) || real(eV[i].eigenvalue) < -1E-10)
         {
+            std::cout << "Found unsuitable eigenvalue: " << eV[i].eigenvalue << std::endl;
             return false;
         }
     }
@@ -270,42 +301,39 @@ arma::cx_mat HMatrix::GetSteadyStateDM()
 
     //cout << "Degeneration: " << GetDegeneration(0) << endl;
 
-    std::vector<cx_mat> eigvecs;
+    check(corner::approx_equal(eV[0].eigenvalue, arma::cx_double(0,0)), "HMatrix::GetSteadyStateDM", "Null eigenvalue not found.");
+
+    // std::vector<cx_mat> eigvecs;
     // for(int i=0; i<GetDegeneration(0); i++)
     // {
-    //    eigvecs.push_back(eigvec.col(i));
+    //    eigvecs.push_back(eV[i].eigenvector);
     // }
 
-    //cx_vec eigvecTot = 0.*eigvecs[0];
-    //for(int i=0; i<GetDegeneration(0); i++)
-    //{
+    // cx_vec eigvecTot = 0.*eigvecs[0];
+    // for(int i=0; i<GetDegeneration(0); i++)
+    // {
     //    eigvecTot += (1/float(GetDegeneration(0)))*eigvecs[i];
-    //}
+    // }
 
-    for(int i=0; i<GetDegeneration(0); i++)
+    bool found = false;
+    for (int i = 0; i < GetDegeneration(0); i++)
     {
-        dm = reshape(eigvec.col(i), sqrt(size()), sqrt(size()));
-        if(IsDM(dm))
+        dm = reshape(eV[i].eigenvector, sqrt(size()), sqrt(size()));
+        dm = (dm+trans(dm))/2.;
+        dm = dm/trace(dm);
+
+        if (HMatrix::IsDM(dm))
         {
+            found = true;
             break;
         }
     }
     
-    check(dm.n_cols != 0 && dm.n_rows != 0, "HMatrix::GetSteadyStateDM", "Did not find a suitable DM");
-
-    cx_vec eigvecTot = eigvec.col(0);
-    
-    dm = (dm+trans(dm))/2.;
+    check(found, "HMatrix::GetSteadyStateDM", "Did not find a suitable DM");
 
     check(!corner::approx_equal(cx_double(trace(dm)), cx_double(0.,0.)), "HMatrix::GetSteadyStateDM", "trace(dm) approximately equals to zero.");
-    dm = dm/trace(dm);
-
-    HMatrix DM(dm);
     
-    if(!DM.IsDM())
-    {
-        cout << "HMatrix::GetSteadyStateDM -> The matrix does not satisfy one ore more than one property of the DM. A check is necessessary.\n";
-    }
+    check(HMatrix::IsDM(dm), "HMatrix::GetSteadyStateDM", "The matrix does not satisfy one ore more than one property of the DM. A check is necessessary.");
 
     return dm;
 }

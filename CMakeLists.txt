@@ -9,7 +9,8 @@ list(APPEND CMAKE_PREFIX_PATH ${ROOT_PATH}/cmake)
 
 SET(ARMADILLO_PATH "" CACHE STRING "path of Armadillo base folder")
 list(APPEND CMAKE_PREFIX_PATH ${ARMADILLO_PATH})
-message("Uvy module path: ${CMAKE_PREFIX_PATH}")
+
+SET(ARPACK_LIBRARY "" CACHE STRING "path of Arpack library")
 
 # Minima versione di CMake richiesta per buildare il tuo progetto
 # Serve almeno la 2.8.12 per usare i comandi target_link_libraries ecc...
@@ -46,6 +47,7 @@ set(SOURCES
 	src/Site.cpp
 	src/System.cpp
 	src/utility.cpp
+	src/eigenV.cpp
 	# aggiungi qui tutte le sorgenti...	
 )
 
@@ -56,6 +58,7 @@ set(SOURCES
 add_executable(${EXEC_NAME} ${SOURCES})
 add_executable(quantumTrajectories src/quantumTrajectories.cpp)
 add_executable(plotter src/plotter.cpp src/utility.cpp)
+add_executable(qTraj4sites src/qTraj4sites.cpp)
 
 
 # Aggiungi la cartella degli header di Root e Armadillo alla
@@ -69,12 +72,16 @@ target_include_directories(corner2.0 PUBLIC ${ARMADILLO_INCLUDE_DIRS})
 target_include_directories(quantumTrajectories PUBLIC ${ROOT_INCLUDE_DIRS})
 target_include_directories(quantumTrajectories PUBLIC ${ARMADILLO_INCLUDE_DIRS})
 
+target_include_directories(qTraj4sites PUBLIC ${ROOT_INCLUDE_DIRS})
+target_include_directories(qTraj4sites PUBLIC ${ARMADILLO_INCLUDE_DIRS})
+
 target_include_directories(plotter PUBLIC ${ROOT_INCLUDE_DIRS})
 target_include_directories(plotter PUBLIC ${ARMADILLO_INCLUDE_DIRS})
 
 # Linka le librerie al tuo eseguibile
 target_link_libraries(corner2.0 ${ROOT_ALL_LIBRARIES} ${ARMADILLO_LIBRARIES})
 target_link_libraries(quantumTrajectories ${ROOT_ALL_LIBRARIES} ${ARMADILLO_LIBRARIES})
+target_link_libraries(qTraj4sites ${ROOT_ALL_LIBRARIES} ${ARMADILLO_LIBRARIES})
 target_link_libraries(plotter ${ROOT_ALL_LIBRARIES} ${ARMADILLO_LIBRARIES})
 
 message("ROOT libraries path: ${ROOT_ALL_LIBRARIES}")
@@ -92,3 +99,4 @@ target_include_directories(plotter PRIVATE
     $<INSTALL_INTERFACE:include>
 )
 
+add_subdirectory(tests)

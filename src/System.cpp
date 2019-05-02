@@ -73,6 +73,7 @@ Block System::Merge(const Block& b1, const Block& b2, bool IsLeft)
     if(b1.C.size() != b2.C.size())
     {
         cout << "System::Merge -> There is an incongruence in the dimensions of the Cs.\n";
+        exit(1);
     }
 
     cx_mat evectDM12;
@@ -116,12 +117,13 @@ Block System::Merge(const Block& b1, const Block& b2, bool IsLeft)
 
     // Renormalization
     cx_mat dm12 = kron(b1.dm, b2.dm);
+    //cout << "dm12 = \n" << dm12 << endl; 
     HMatrix DM12(dm12);
     if(!DM12.IsHermitian()){cout << "Not hermitian\n";}
     if(!DM12.TraceOne()){cout << "Not trace 1 = " << trace(dm12) <<"\n";}
     if(!DM12.EigSumIsOne()){cout << "Sum not one\n";}
     if(!DM12.EigRealPositive()){cout << "eigenvalues not real positive:" << DM12.GetEigenvalues() << endl;}
-    //check(DM12.IsDM(), "System::Merge", "This is not a DM");
+    check(DM12.IsDM(), "System::Merge", "This is not a DM");
     
     evectDM12 = DM12.GetONBasis();
 
@@ -156,6 +158,8 @@ Block System::Merge(const Block& b1, const Block& b2, bool IsLeft)
 
     HMatrix liouv(MergedBlock.L, true);
     MergedBlock.dm = liouv.GetSteadyStateDM();
+
+    std::cout << "LAST\n";
     HMatrix DM(MergedBlock.dm);
     MergedBlock.evectDM = DM.GetONBasis();
 

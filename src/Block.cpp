@@ -20,26 +20,26 @@ Block::Block(Site s)
     I << cx_double(1., 0.) << cx_double(0., 0.) << endr 
       << cx_double(0., 0.) << cx_double(1., 0.) << endr;
 
-    Sx << cx_double(0., 0.) << cx_double(0.5, 0.) << endr 
-       << cx_double(0.5, 0.) << cx_double(0., 0.) << endr;
+    Sx << cx_double(0., 0.) << cx_double(1., 0.) << endr 
+       << cx_double(1., 0.) << cx_double(0., 0.) << endr;
 
-    Sy << cx_double(0., 0.) << cx_double(0., -0.5) << endr 
-       << cx_double(0., 0.5) << cx_double(0., 0.) << endr;
+    Sy << cx_double(0., 0.) << cx_double(0., -1.) << endr 
+       << cx_double(0., 1.) << cx_double(0., 0.) << endr;
 
-    Sz << cx_double(0.5, 0.) << cx_double(0., 0.) << endr 
-       << cx_double(0., 0.) << cx_double(-0.5, 0.) << endr;
+    Sz << cx_double(1., 0.) << cx_double(0., 0.) << endr 
+       << cx_double(0., 0.) << cx_double(-1., 0.) << endr;
 
     H << cx_double(0., 0.) << cx_double(0., 0.) << endr 
       << cx_double(0., 0.) << cx_double(0., 0.) << endr;
 
-    sigmaZ[0] << cx_double(0.5, 0.) << cx_double(0., 0.) << endr 
-              << cx_double(0., 0.) << cx_double(-0.5, 0.) << endr;
+    sigmaZ[0] << cx_double(1., 0.) << cx_double(0., 0.) << endr 
+              << cx_double(0., 0.) << cx_double(-1., 0.) << endr;
     
-    sigmaX[0] << cx_double(0., 0.) << cx_double(0.5, 0.) << endr 
-              << cx_double(0.5, 0.) << cx_double(0., 0.) << endr;
+    sigmaX[0] << cx_double(0., 0.) << cx_double(1., 0.) << endr 
+              << cx_double(1., 0.) << cx_double(0., 0.) << endr;
 
-    sigmaY[0] << cx_double(0., 0.) << cx_double(0., -0.5) << endr 
-              << cx_double(0., 0.5) << cx_double(0., 0.) << endr;
+    sigmaY[0] << cx_double(0., 0.) << cx_double(0., -1.) << endr 
+              << cx_double(0., 1.) << cx_double(0., 0.) << endr;
 
     
     if (s.GetDissipator() == Empty)

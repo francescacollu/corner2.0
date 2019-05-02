@@ -13,26 +13,19 @@ int main(int argc, char *argv[])
 {
     TApplication* app = new TApplication("app", 0, 0);
 
-    int M = atoi(argv[1]);
-    float Jx = atof(argv[2]);
-    float Jy = atof(argv[3]);
-    float Jz = atof(argv[4]);
+    int M = atoi(argv[2]);
+    double Jx = atof(argv[3]);
+    double Jy = atof(argv[4]);
+    double Jz = atof(argv[5]);
 
-    string s = "../../RESULTS/CSR/s16_M";
+    string s = "../../RESULTS/CSR/s";
     s.append(argv[1]);
-    s.append("J");
+    s.append("_M");
     s.append(argv[2]);
+    s.append("J");
     s.append(argv[3]);
     s.append(argv[4]);
-
-    // const char* out = s.c_str();
-
-    // string stxt = s;
-    // stxt.append(".txt");
-
-    // const char* outTxt = stxt.c_str();
-
-    // ofstream myfile(outTxt);
+    s.append(argv[5]);
 
     System sy;
 
@@ -66,14 +59,14 @@ int main(int argc, char *argv[])
     sy.Add(Site());
     sy.Add(Site());
     sy.Add(Site());
-    sy.Add(Site());
-    sy.Add(Site());
-    sy.Add(Site());
-    sy.Add(Site());
-    sy.Add(Site());
-    sy.Add(Site());
-    sy.Add(Site());
-    sy.Add(Site());
+    //sy.Add(Site());
+    //sy.Add(Site());
+    //sy.Add(Site());
+    //sy.Add(Site());
+    //sy.Add(Site());
+    //sy.Add(Site());
+    //sy.Add(Site());
+    //sy.Add(Site());
     sy.Add(Site());
     sy.Add(Site());
     sy.Add(Site(ZDown));
@@ -102,38 +95,37 @@ int main(int argc, char *argv[])
     pLM->SetMarkerStyle(20);
     pLM->SetMarkerColor(kBlue);
     pLM->SetLineWidth(1);
-    pLM->Draw("ALP");
+    pLM->Draw("AP");
     pLM->SetTitle(outLM);
     pLM->GetXaxis()->SetTitle("site_index");
     pLM->GetYaxis()->SetTitle("<Sz>");
-    cLM->SetGrid();
     cLM->Update();
-
-    TCanvas* cSC = new TCanvas;
-    TGraph *pSC = new TGraph(outSpinCurr);
-    pSC->SetMarkerStyle(20);
-    pSC->SetMarkerColor(kBlue);
-    pSC->SetLineWidth(1);
-    pSC->Draw("ALP");
-    pSC->SetTitle(outSpinCurr);
-    pSC->GetXaxis()->SetTitle("site_index");
-    pSC->GetYaxis()->SetTitle("<J>");
-    cSC->SetGrid();
-    cSC->Update();
 
     string sLMpdf = s;
     sLMpdf.append("_LM.pdf");
     const char* outLMPdf = sLMpdf.c_str();
     cLM->SaveAs(outLMPdf);
 
+    TCanvas* cSC = new TCanvas;
+    TGraph *pSC = new TGraph(outSpinCurr);
+    pSC->SetMarkerStyle(20);
+    pSC->SetMarkerColor(kBlue);
+    pSC->SetLineWidth(1);
+    pSC->Draw("AP");
+    pSC->SetTitle(outSpinCurr);
+    pSC->GetXaxis()->SetTitle("site_index");
+    pSC->GetYaxis()->SetTitle("<J>");
+    cSC->Update();
+
     string sSCpdf = s;
     sSCpdf.append("_SpinCurr.pdf");
     const char* outSCPdf = sSCpdf.c_str();
-    cLM->SaveAs(outSCPdf);
+    cSC->SaveAs(outSCPdf);
 
     app->Run();
 
     delete cLM;
+    delete cSC;
 
     return 0;
 }
