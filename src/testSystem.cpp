@@ -6,11 +6,14 @@
 #include <TAxis.h>
 #include <cstdlib>
 #include <string>
+#include "utility.hpp"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
+    corner::check(argc == 6, "testSystem", "Usage: corner2.0 <nSites> <M> <Jx> <Jy> <Jz>");
+
     TApplication* app = new TApplication("app", 0, 0);
 
     int M = atoi(argv[2]);
@@ -18,8 +21,11 @@ int main(int argc, char *argv[])
     double Jy = atof(argv[4]);
     double Jz = atof(argv[5]);
 
-    string s = "../../RESULTS/CSR/s";
+    string s = "../out/s";
     s.append(argv[1]);
+    int nSites = std::stoi(argv[1]);
+    corner::check(nSites >= 2, "testSystem", "nSites must be at least 2");
+
     s.append("_M");
     s.append(argv[2]);
     s.append("J");
@@ -55,20 +61,10 @@ int main(int argc, char *argv[])
     ///////////////////////////////////
 
     sy.Add(Site(ZUp));
-    sy.Add(Site());
-    sy.Add(Site());
-    sy.Add(Site());
-    sy.Add(Site());
-    //sy.Add(Site());
-    //sy.Add(Site());
-    //sy.Add(Site());
-    //sy.Add(Site());
-    //sy.Add(Site());
-    //sy.Add(Site());
-    //sy.Add(Site());
-    //sy.Add(Site());
-    sy.Add(Site());
-    sy.Add(Site());
+
+    for (int i = 0; i < nSites - 2; i++)
+      sy.Add(Site());
+
     sy.Add(Site(ZDown));
 
     sy.SetCouplingConstants(Jx, Jy, Jz);
@@ -122,7 +118,7 @@ int main(int argc, char *argv[])
     const char* outSCPdf = sSCpdf.c_str();
     cSC->SaveAs(outSCPdf);
 
-    app->Run();
+    //app->Run();
 
     delete cLM;
     delete cSC;

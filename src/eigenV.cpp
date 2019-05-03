@@ -31,7 +31,9 @@ void corner::groupWithSameAbs(std::vector<eigenV>& eV)
 
         int next_i = i + count_equal_abs;
 
+	#ifdef DEBUGGING
         std::cout << "With abs: " << current_abs_eigenval << ": " << count_equal_abs << std::endl; 
+	#endif
 
         // Sort by real part
         std::sort(eV.begin() + i, eV.begin() + i + count_equal_abs, corner::sortByReal());

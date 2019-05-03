@@ -1,6 +1,10 @@
 # Nome del progetto
 project(Tesi)
 
+OPTION(DEBUGGING "Print debug information" OFF)
+if (DEBUGGING)
+   add_definitions(-DDEBUGGING)
+endif (DEBUGGING)
 
 # Setta una variabile di nome EXEC_NAME uguale a StructuredCorner
 set(EXEC_NAME corner2.0)

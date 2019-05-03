@@ -159,7 +159,10 @@ Block System::Merge(const Block& b1, const Block& b2, bool IsLeft)
     HMatrix liouv(MergedBlock.L, true);
     MergedBlock.dm = liouv.GetSteadyStateDM();
 
+    #ifdef DEBUGGING
     std::cout << "LAST\n";
+    #endif
+    
     HMatrix DM(MergedBlock.dm);
     MergedBlock.evectDM = DM.GetONBasis();
 
