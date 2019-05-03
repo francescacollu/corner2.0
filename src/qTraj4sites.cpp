@@ -1,3 +1,14 @@
+#ifndef __APPLE__
+#warning "This code can only run on my Mac because I cannot update the compiler on other machines"
+
+int main()
+{
+  return 0;
+}
+
+
+#else
+
 #include <armadillo>
 #include <iostream>
 #include <fstream>
@@ -366,3 +377,5 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+
+#endif

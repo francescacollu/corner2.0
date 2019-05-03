@@ -5,9 +5,9 @@
 void print(const std::vector<corner::eigenV>& v, const char* description)
 {
     std::cout << description << ": \n";
-    for (auto itr : v)
+    for (std::vector<corner::eigenV>::const_iterator itr =  v.begin(); itr != v.end(); itr++)
     {
-        std::cout << itr.eigenvalue << '\t';
+        std::cout << itr->eigenvalue << '\t';
     }
     std::cout << '\n';
 }

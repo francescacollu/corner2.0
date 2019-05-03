@@ -5,13 +5,6 @@ cmake_minimum_required(VERSION 2.8.12)
 # Digli di usare lo standard c++11
 set(CMAKE_CXX_STANDARD 11)
 
-# Trova ROOT e ARMADILLO e definisce delle variabili tipo ROOT_INCLUDE_DIRS ecc...
-# che ti servono per linkarle al tuo eseguibile. Se non lo trova ti d� errore
-# perch� gli ho detto che sono REQUIRED
-find_package(ROOT REQUIRED COMPONENTS Graf Gpad)
-
-set(ROOT_ALL_LIBRARIES ${ROOT_LIBRARIES})
-
 find_package(Armadillo REQUIRED)
 message("ARMADILLO LIBRARY PATH: " ${ARMADILLO_LIBRARIES})
 
